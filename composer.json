@@ -1,0 +1,15 @@
+{
+    "name": "dev-community/code-formatter",
+    "description": "A simple web app to format code",
+    "require": {
+        "php": ">=7.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "DevCommunityDE\\CodeFormatter\\": "app"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.0"
+    }
+}
