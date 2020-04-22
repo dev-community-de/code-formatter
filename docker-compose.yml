@@ -10,3 +10,11 @@ services:
       - 80:80
     volumes:
       - .:/srv/app
+    depends_on:
+      - composer
+
+  composer:
+    image: composer:1.10
+    command: ["composer", "install"]
+    volumes:
+    - .:/app
