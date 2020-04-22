@@ -1,7 +1,13 @@
 FROM php:7.4-apache
 
+# Packages for formatting C and C++ code
+RUN apt-get update -y && \
+    apt-get install -y clang-format
+
+# Packages for formatting Go code
+RUN apt-get update -y && \
+    apt-get install -y golang
+
 COPY .docker/web/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /srv/app
-
-RUN apt-get update -y && apt-get install -y clang-format
