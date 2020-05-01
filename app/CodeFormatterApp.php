@@ -74,7 +74,13 @@ class CodeFormatterApp
             if ($this->isCodeBlock($block)) {
                 $file = $this->putCodeInTempFile($key);
 
-                $this->executeCodeFormatting($file);
+                try {
+                    $this->executeCodeFormatting($file);
+                } catch (Exception $e) {
+                    $this->deleteTempCodeFile($file);
+
+                    continue;
+                }
 
                 $code = $this->getFormattedCode($file);
 
@@ -146,6 +152,10 @@ class CodeFormatterApp
     protected function executeCodeFormatting(string $file)
     {
         $code_formatter = CodeFormatter::create($this->code_language);
+
+        if (!$code_formatter) {
+            throw new Exception('No code formatter for given language found');
+        }
 
         $code_formatter->exec($file);
     }
