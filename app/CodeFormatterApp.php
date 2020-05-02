@@ -14,6 +14,11 @@ class CodeFormatterApp
 {
 
     /**
+     * @var string
+     */
+    protected const CODE_BLOCK_REGEX = '/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/';
+
+    /**
      * @var string|array
      */
     protected $post_content;
@@ -101,7 +106,7 @@ class CodeFormatterApp
     protected function isCodeBlock(string $str) : bool
     {
         // check if code block
-        $is_code_block = preg_match('/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/', $str, $matches) === 1;
+        $is_code_block = preg_match(self::CODE_BLOCK_REGEX, $str, $matches) === 1;
 
         $this->captureCodeBlockComponents($matches);
 
@@ -178,7 +183,7 @@ class CodeFormatterApp
     protected function replaceCodeBlockWithFormattedCode(string $formatted_code, string $code_block) : string
     {
         // replace code block with formatted code, fall back to code block
-        return preg_replace('/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/', $formatted_code, $code_block) ?? $code_block;
+        return preg_replace(self::CODE_BLOCK_REGEX, addcslashes($formatted_code, '\\'), $code_block) ?? $code_block;
     }
 
     /**
