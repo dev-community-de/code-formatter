@@ -26,7 +26,7 @@ class ClangCodeFormatter extends CodeFormatter
      */
     protected function getShellCommand(string $file) : string
     {
-        return 'clang-format -style=LLVM -i ' . $file;
+        return 'clang-format -style=file -i ' . $file;
     }
 
 }
