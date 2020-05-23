@@ -24,5 +24,5 @@ steps:
       - '--platform'
       - 'managed'
 
-    images:
+images:
     - 'gcr.io/$PROJECT_ID/code-formatter:$COMMIT_SHA'
