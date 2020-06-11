@@ -12,7 +12,5 @@ COPY .docker/web/vhost.conf /etc/apache2/sites-available/000-default.conf
 
 WORKDIR /srv/app
 
-RUN apt-get update -y && apt-get install -y clang-format
-
 RUN mkdir -p /srv/app/storage/code
 RUN chmod -R ug+rwx /srv/app/storage/code && chown -R www-data:www-data /srv/app && a2enmod rewrite
