@@ -17,6 +17,7 @@ abstract class CodeFormatter
      */
     protected static $code_formatters = [
         ClangCodeFormatter::class,
+        GoCodeFormatter::class,
     ];
 
     /**

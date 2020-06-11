@@ -1,14 +1,22 @@
 version: '3'
 
 services:
-    web:
-        build:
-            context: .
-            dockerfile: .docker/web/Dockerfile
-        image: dev-community-code-formatter_web
-        ports:
-            - 8000:80
-        volumes:
-            - .:/srv/app
-        environment:
-            - API_KEY=abc
+  web:
+    build:
+      context: .
+      dockerfile: .docker/web/Dockerfile
+    image: dev-community-code-formatter_web
+    ports:
+      - 8000:80
+    volumes:
+      - .:/srv/app
+    environment:
+      - API_KEY=abc
+    depends_on:
+      - composer
+
+  composer:
+    image: composer:1.10
+    command: ["composer", "install"]
+    volumes:
+      - .:/app
