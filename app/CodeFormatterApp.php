@@ -14,6 +14,11 @@ class CodeFormatterApp
 {
 
     /**
+     * @var string
+     */
+    protected const CODE_BLOCK_REGEX = '/(\[CODE(?:(?:=([a-z]+)?)|(?:\slang=\"?([a-z]+)\"?).*)?\])((?:.*\n?)*)/';
+
+    /**
      * @var string|array
      */
     protected $post_content;
@@ -34,13 +39,16 @@ class CodeFormatterApp
     protected $code_content;
 
     /**
+     * @var string
+     */
+    protected $code_file;
+
+    /**
      *
      */
     public function run()
     {
         $this->readPostContent();
-
-        $this->splitPostAtCodeBlockEnding();
 
         $this->processPostContent();
 
@@ -59,28 +67,17 @@ class CodeFormatterApp
     /**
      *
      */
-    protected function splitPostAtCodeBlockEnding()
-    {
-        // split post at code block ending
-        $this->post_content = preg_split('/\[\/CODE\]/', $this->post_content);
-    }
-
-    /**
-     *
-     */
     protected function processPostContent()
     {
+        $this->splitPostAtCodeBlockEnding();
+
         foreach ($this->post_content as $key => $block) {
-            if ($this->isCodeBlock($block)) {
-                $file = $this->putCodeInTempFile($key);
+            try {
+                $this->post_content[$key] = $this->replaceCodeBlockWithFormattedCodeBlock($block, $key);
+            } catch (Exception $e) {
+                $this->deleteTempCodeFile($this->code_file);
 
-                $this->executeCodeFormatting($file);
-
-                $code = $this->getFormattedCode($file);
-
-                $this->post_content[$key] = $this->replaceCodeBlockWithFormattedCode($code, $block);
-
-                $this->deleteTempCodeFile($file);
+                continue;
             }
         }
 
@@ -89,35 +86,64 @@ class CodeFormatterApp
     }
 
     /**
-     * @param string $str
-     * @return bool
+     *
      */
-    protected function isCodeBlock(string $str) : bool
+    protected function splitPostAtCodeBlockEnding()
     {
-        // check if code block
-        $is_code_block = preg_match('/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/', $str, $matches) === 1;
-
-        $this->captureCodeBlockComponents($matches);
-
-        return $is_code_block;
+        // split post at code block ending
+        $this->post_content = preg_split('/\[\/CODE\]/', $this->post_content);
     }
 
     /**
-     * @param array $matches
+     * @param string $block
+     * @param string $key
+     * @return string
      */
-    protected function captureCodeBlockComponents(array $matches)
+    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key) : string
+    {
+        // replace code block with formatted code block
+        return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key) : string {
+            $this->captureCodeBlockComponents($match);
+
+            return $this->code_tag . $this->formatCode($key);
+        }, $block);
+    }
+
+    /**
+     * @param array $match
+     */
+    protected function captureCodeBlockComponents(array $match)
     {
         // capture code block components (code tag, code language, actual code content)
-        $this->code_tag = $matches[1];
-        $this->code_language = $matches[2] ?: 'txt';
-        $this->code_content = $matches[3];
+        $this->code_tag = $match[1];
+        $this->code_content = $match[4];
+
+        $specified_code_lang = $match[2] ?: $match[3];
+        $this->code_language = $specified_code_lang ?: 'txt';
     }
 
     /**
      * @param string $file_key
      * @return string
      */
-    protected function putCodeInTempFile(string $file_key = '') : string
+    protected function formatCode(string $file_key) : string
+    {
+        $this->code_file = $this->putCodeInTempFile($file_key);
+
+        $this->executeCodeFormatting($this->code_file);
+
+        $code = $this->getFormattedCode($this->code_file);
+
+        $this->deleteTempCodeFile($this->code_file);
+
+        return $code;
+    }
+
+    /**
+     * @param string $file_key
+     * @return string
+     */
+    protected function putCodeInTempFile(string $file_key) : string
     {
         $filename = $this->generateTempFileName($file_key);
 
@@ -147,6 +173,10 @@ class CodeFormatterApp
     {
         $code_formatter = CodeFormatter::create($this->code_language);
 
+        if (!$code_formatter) {
+            throw new Exception('No code formatter for given language found');
+        }
+
         $code_formatter->exec($file);
     }
 
@@ -157,18 +187,7 @@ class CodeFormatterApp
     protected function getFormattedCode(string $file) : string
     {
         // get formatted code
-        return $this->code_tag . file_get_contents($file);
-    }
-
-    /**
-     * @param string $formatted_code
-     * @param string $code_block
-     * @return string
-     */
-    protected function replaceCodeBlockWithFormattedCode(string $formatted_code, string $code_block) : string
-    {
-        // replace code block with formatted code, fall back to code block
-        return preg_replace('/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/', $formatted_code, $code_block) ?? $code_block;
+        return file_get_contents($file);
     }
 
     /**

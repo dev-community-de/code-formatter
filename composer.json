@@ -1,6 +1,6 @@
 {
     "name": "dev-community/code-formatter",
-    "description": "A simple web app to format code",
+    "description": "A simple web app to format code in XenForo forum posts",
     "require": {
         "php": ">=7.3"
     },

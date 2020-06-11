@@ -1,0 +1,3 @@
+BasedOnStyle: LLVM
+ColumnLimit: 180
+ReflowComments: false

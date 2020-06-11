@@ -27,24 +27,26 @@ abstract class CodeFormatter
 
     /**
      * @param string $code_language
-     * @return self
+     * @return self|null
      */
-    public static function create(string $code_language) : self
+    public static function create(string $code_language) : ?self
     {
         return self::getCodeFormatterForLanguage($code_language);
     }
 
      /**
      * @param string $lang
-     * @return self
+     * @return self|null
      */
-    protected static function getCodeFormatterForLanguage(string $lang) : self
+    protected static function getCodeFormatterForLanguage(string $lang) : ?self
     {
         foreach (self::$code_formatters as $code_formatter) {
             if (self::supportsLanguage($code_formatter, $lang)) {
                 return new $code_formatter;
             }
         }
+
+        return null;
     }
 
     /**

@@ -1,0 +1,7 @@
+storage
+vendor
+.editorconfig
+.gitignore
+LICENSE
+README.md
+docker-compose.yml
