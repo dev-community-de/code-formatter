@@ -16,7 +16,7 @@ class CodeFormatterApp
     /**
      * @var string
      */
-    protected const CODE_BLOCK_REGEX = '/(\[CODE(?:=([a-z]+)?)?\])((?:.*\n?)*)/';
+    protected const CODE_BLOCK_REGEX = '/(\[CODE(?:(?:=([a-z]+)?)|(?:\slang=\"?([a-z]+)\"?).*)?\])((?:.*\n?)*)/';
 
     /**
      * @var string|array
@@ -116,8 +116,10 @@ class CodeFormatterApp
     {
         // capture code block components (code tag, code language, actual code content)
         $this->code_tag = $match[1];
-        $this->code_language = $match[2] ?: 'txt';
-        $this->code_content = $match[3];
+        $this->code_content = $match[4];
+
+        $specified_code_lang = $match[2] ?: $match[3];
+        $this->code_language = $specified_code_lang ?: 'txt';
     }
 
     /**
