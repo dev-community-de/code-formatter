@@ -7,28 +7,26 @@ plugins:
     - ./node_modules/@prettier/plugin-ruby
     - ./node_modules/@prettier/plugin-xml
     - ./node_modules/prettier-plugin-java
-    - ./node_modules/prettier-plugin-kotlin
 
 # General settings
-useTabs: false      # indent_style = space
-tabWidth: 4         # indent_size = 4
+useTabs: false
+tabWidth: 4
 printWidth: 120
 singleQuote: false
 trailingComma: none
-endOfLine: lf       # end_of_line = lf
+endOfLine: lf
 semi: false
 proseWrap: preserve
 
 # Language specific settings
 overrides:
 
-    # Stylesheet
+    # Officially supported languages
+
     -   files: "*.css"
         options:
             parser: css
 
-
-    # HTML (without XML validation)
     -   files:
             - "*.html"
             - "*.html5"
@@ -36,7 +34,6 @@ overrides:
             parser: html
             htmlWhitespaceSensitivity: ignore
 
-    #
     -   files:
             - "*.js"
             - "*.javascript"
@@ -48,13 +45,18 @@ overrides:
     -   files:
             - "*.json"
         options:
-            parser: babel
-            trailingComma: es5
-            semi: true
+            parser: json
+            semi: false
+
+    -   files:
+            - "*.less"
+        options:
+            parser: less
 
     -   files:
             - "*.md"
             - "*.MD"
+            - "*.markdown"
         options:
             parser: markdown
 
@@ -63,14 +65,18 @@ overrides:
             parser: scss
 
     -   files:
-            - "*.ts"
-            - "*.typescript"
+            - "*.yaml"
+            - "*.yml"
         options:
-            parser: typescript
+            parser: yaml
+            singleQuote: false
+            tabWidth: 2
+            trailingComma: none
 
-    # Plugin Doc: https://github.com/prettier/plugin-php
+    # Official plugin : https://github.com/prettier/plugin-php
     -   files:
             - "*.php"
+            - "*.phar"
         options:
             parser: php
             phpVersion: "7.3"
@@ -78,30 +84,21 @@ overrides:
             trailingCommaPHP: true
             braceStyle: "psr-2"
 
-    # Plugin Doc: https://github.com/prettier/plugin-ruby
+    # Official plugin : https://github.com/prettier/plugin-ruby
     -   files:
             - "*.rb"
             - "*.ruby"
         options:
             parser: ruby
 
-    -   files:
-            - "*.html.vue"
-            - "*.vue"
-        options:
-            parser: vue
-            vueIndentScriptAndStyle: true
-
-    -   files:
-            - "*.yaml"
-            - "*.yml"
-        options:
-            parser: yaml
-            singleQuote: false
-            tabWidth: 2
-            trailingComma: none # only applies when using []-arrays
-
+    # Official plugin : https://github.com/prettier/plugin-xml
     -   files:
             - "*.xml"
         options:
             parser: xml
+
+    # Unofficial plugin : https://github.com/jhipster/prettier-java
+    -   files:
+            - "*.java"
+        options:
+            parser: java
