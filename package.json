@@ -3,10 +3,6 @@
     "description": "Manage JS dependencies to be used with the Code Formatter",
     "version": "0.1.0",
     "dependencies": {
-        "prettier": "^2.0.5",
-        "@prettier/plugin-php": "^0.14.2",
-        "@prettier/plugin-ruby": "^0.18.2",
-        "@prettier/plugin-xml": "^0.7.2",
-        "prettier-plugin-java": "^0.8.0"
+        "prettier": "^2.0.5"
     }
 }

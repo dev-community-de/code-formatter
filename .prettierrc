@@ -1,13 +1,6 @@
 # Specification: http://json.schemastore.org/prettierrc
 # Documentation: https://prettier.io/docs/en/index.html
 
-# Plugins
-plugins:
-    - ./node_modules/@prettier/plugin-php
-    - ./node_modules/@prettier/plugin-ruby
-    - ./node_modules/@prettier/plugin-xml
-    - ./node_modules/prettier-plugin-java
-
 # General settings
 useTabs: false
 tabWidth: 4
@@ -21,17 +14,21 @@ proseWrap: preserve
 # Language specific settings
 overrides:
 
-    # Officially supported languages
-
     -   files: "*.css"
         options:
             parser: css
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
 
     -   files:
+            - "*.htm"
             - "*.html"
             - "*.html5"
         options:
             parser: html
+            singleQuote: false
             htmlWhitespaceSensitivity: ignore
 
     -   files:
@@ -47,11 +44,19 @@ overrides:
         options:
             parser: json
             semi: false
+            trailingComma: none
+            singleQuote: false
+            quoteProps: consistent
+            tabWidth: 2
 
     -   files:
             - "*.less"
         options:
             parser: less
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
 
     -   files:
             - "*.md"
@@ -59,10 +64,18 @@ overrides:
             - "*.markdown"
         options:
             parser: markdown
+            proseWrap: preserve
+            htmlWhitespaceSensitivity: strict
+            quoteProps: preserve
+
 
     -   files: "*.scss"
         options:
             parser: scss
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
 
     -   files:
             - "*.yaml"
@@ -72,33 +85,3 @@ overrides:
             singleQuote: false
             tabWidth: 2
             trailingComma: none
-
-    # Official plugin : https://github.com/prettier/plugin-php
-    -   files:
-            - "*.php"
-            - "*.phar"
-        options:
-            parser: php
-            phpVersion: "7.3"
-            singleQuote: true
-            trailingCommaPHP: true
-            braceStyle: "psr-2"
-
-    # Official plugin : https://github.com/prettier/plugin-ruby
-    -   files:
-            - "*.rb"
-            - "*.ruby"
-        options:
-            parser: ruby
-
-    # Official plugin : https://github.com/prettier/plugin-xml
-    -   files:
-            - "*.xml"
-        options:
-            parser: xml
-
-    # Unofficial plugin : https://github.com/jhipster/prettier-java
-    -   files:
-            - "*.java"
-        options:
-            parser: java

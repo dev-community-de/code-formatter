@@ -14,21 +14,14 @@ class PrettierCodeFormatter extends CodeFormatter
      * @var array
      */
     protected static $supported_languages = [
-        // Official support
-        'css', // Todo
-        'html', // Todo
-        'javascript', // Todo
-        'json', // Todo
-        'less', // Todo
-        'markdown', // Todo
-        'scss', // Todo
-        'yaml', // Todo
-        // Official plugins
-        'php', // Todo
-        'ruby', // Todo
-        'xml', // Todo
-        // Unofficial plugins
-        'java', // Todo
+        'css',
+        'html',
+        'javascript',
+        'json',
+        'less',
+        'markdown',
+        'scss',
+        'yaml',
     ];
 
     /**
