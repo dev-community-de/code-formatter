@@ -10,6 +10,11 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     apt-get install -y golang
 
+# Packages for formatting Python code
+RUN apt-get update -y && \
+    apt-get install -y python3.7-minimal python3-pip && \
+    pip3 install black
+
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY . /srv/app
 
