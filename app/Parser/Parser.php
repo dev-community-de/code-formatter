@@ -63,7 +63,7 @@ final class Parser implements ParserInterface
             unset($attrs['lang']);
         }
 
-        if (1 === \count($attrs)) {
+        if (isset($attrs['lang']) && 1 === \count($attrs)) {
             // use "=lang" notation
             $buffer .= '=' . $attrs['lang'];
         } else {
