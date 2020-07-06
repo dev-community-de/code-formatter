@@ -2,3 +2,5 @@ vendor
 .idea
 .vscode
 node_modules
+bootstrap/env.php
+*.code-workspace
