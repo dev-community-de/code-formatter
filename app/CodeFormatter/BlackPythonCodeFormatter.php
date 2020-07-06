@@ -14,6 +14,7 @@ class BlackPythonCodeFormatter extends CodeFormatter
 {
     protected const LANGUAGES = [
         'python',
+        'py',
     ];
 
     /**
