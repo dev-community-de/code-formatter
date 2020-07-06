@@ -19,6 +19,34 @@ class CodeFormatterApp
     protected const CODE_BLOCK_REGEX = '/(\[CODE(?:(?:=([a-z]+)?)|(?:\slang=\"?([a-z]+)\"?).*)?\])((?:.*\n?)*)/';
 
     /**
+     * code_lang => file_ext mappings
+     *
+     * @var array
+     */
+    protected const CODE_LANG_FILE_EXT_MAPPINGS = [
+        'c' => 'c',
+        'cpp' => 'cpp',
+        'csharp' => 'cs',
+        'css' => 'css',
+        'go' => 'go',
+        'html' => 'html',
+        'java' => 'java',
+        'javascript' => 'js',
+        'json' => 'json',
+        'less' => 'less',
+        'markdown' => 'md',
+        'objectivec' => 'm',
+        'php' => 'php',
+        'python' => 'py',
+        'ruby' => 'rb',
+        'sass' => 'sass',
+        'scss' => 'scss',
+        'sql' => 'sql',
+        'swift' => 'swift',
+        'yaml' => 'yaml',
+    ];
+
+    /**
      * @var string|array
      */
     protected $post_content;
@@ -119,7 +147,16 @@ class CodeFormatterApp
         $this->code_content = $match[4];
 
         $specified_code_lang = $match[2] ?: $match[3];
-        $this->code_language = $specified_code_lang ?: 'txt';
+        $this->code_language = $this->determineCodeLanguage($specified_code_lang);
+    }
+
+    /**
+     * @param string $lang
+     * @return string
+     */
+    protected function determineCodeLanguage(string $lang) : string
+    {
+        return self::CODE_LANG_FILE_EXT_MAPPINGS[$lang] ?: 'txt';
     }
 
     /**
