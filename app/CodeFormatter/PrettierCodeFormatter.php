@@ -1,19 +1,18 @@
 <?php
 
+/*
+ * This file is part of the dev-community code formatter
+ * (c) The dev-community.de authors
+ */
+
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
 /**
- * Class PrettierCodeFormatter
- *
- * @package DevCommunityDE\CodeFormatter\CodeFormatter
+ * Class PrettierCodeFormatter.
  */
 class PrettierCodeFormatter extends CodeFormatter
 {
-
-    /**
-     * @var array
-     */
-    protected static $supported_languages = [
+    protected const LANGUAGES = [
         'css',
         'html',
         'javascript',
@@ -25,14 +24,18 @@ class PrettierCodeFormatter extends CodeFormatter
     ];
 
     /**
-     * Config is taken automatically from <code>.prettierrc</code> file
-     * @param string $file
+     * Config is taken automatically from <code>.prettierrc</code> file.
+     *
      * {@internal <code>--loglevel silent</code> does not override exit codes}
+     *
+     * @param string $file
+     *
      * @return string
      */
-    protected function getShellCommand(string $file) : string
+    protected function getShellCommand(string $file): string
     {
-        return __DIR__ . '/../../node_modules/.bin/prettier --loglevel silent --write \'' . $file . '\'';
+        $fileArg = escapeshellarg($file);
+        $confArg = escapeshellarg(realpath(__DIR__ . '/../../.prettierrc'));
+        return 'npx prettier --loglevel silent --config ' . $confArg . ' --write ' . $fileArg;
     }
-
 }

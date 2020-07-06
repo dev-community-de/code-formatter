@@ -1,50 +1,38 @@
 <?php
 
+/*
+ * This file is part of the dev-community code formatter
+ * (c) The dev-community.de authors
+ */
+
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 
 /**
- * Class CodeFormatter
- *
- * @package DevCommunityDE\CodeFormatter\CodeFormatter
+ * Class CodeFormatter.
  */
 abstract class CodeFormatter
 {
-
-    /**
-     * @var array
-     */
-    protected static $code_formatters = [
+    private const FORMATTERS = [
         BlackPythonCodeFormatter::class,
         ClangCodeFormatter::class,
         GoCodeFormatter::class,
         PrettierCodeFormatter::class,
     ];
 
-    /**
-     * @var array
-     */
-    protected static $supported_languages = [];
+    protected const LANGUAGES = [];
 
     /**
-     * @param string $code_language
+     * @param string $language
+     *
      * @return self|null
      */
-    public static function create(string $code_language) : ?self
+    public static function create(string $language): ?self
     {
-        return self::getCodeFormatterForLanguage($code_language);
-    }
-
-     /**
-     * @param string $lang
-     * @return self|null
-     */
-    protected static function getCodeFormatterForLanguage(string $lang) : ?self
-    {
-        foreach (self::$code_formatters as $code_formatter) {
-            if (self::supportsLanguage($code_formatter, $lang)) {
-                return new $code_formatter;
+        foreach (self::FORMATTERS as $formatter) {
+            if (\in_array($language, $formatter::LANGUAGES)) {
+                return new $formatter($language);
             }
         }
 
@@ -52,32 +40,26 @@ abstract class CodeFormatter
     }
 
     /**
-     * @param string $code_formatter
-     * @param string $lang
-     * @return bool
-     */
-    protected static function supportsLanguage(string $code_formatter, string $lang) : bool
-    {
-        return in_array($lang, $code_formatter::$supported_languages);
-    }
-
-    /**
      * @param string $file
      */
     public function exec(string $file)
     {
-        // execute code formatting
-        exec($this->getShellCommand($file), $output, $return_var);
+        $shell = $this->getShellCommand($file);
+        echo '> ', $shell, "\n";
 
-        if ($return_var !== 0) {
+        // execute code formatting
+        echo exec($shell, $output, $return_var), "\n";
+        echo implode("\n", $output), "\n";
+
+        if (0 !== $return_var) {
             throw new Exception('code formatting failed');
         }
     }
 
     /**
      * @param string $file
+     *
      * @return string
      */
     abstract protected function getShellCommand(string $file);
-
 }
