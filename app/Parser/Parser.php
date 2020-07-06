@@ -58,6 +58,11 @@ final class Parser implements ParserInterface
         $buffer = '[code';
         $attrs = $node->getAttributes();
 
+        // do not emit lang-attribute for text codes
+        if ('text' === $attrs['lang']) {
+            unset($attrs['lang']);
+        }
+
         if (1 === \count($attrs)) {
             // use "=lang" notation
             $buffer .= '=' . $attrs['lang'];
@@ -82,7 +87,7 @@ final class Parser implements ParserInterface
      */
     private function parseAttributes(string $text): array
     {
-        $attrs = [];
+        $attrs = ['lang' => 'text'];
 
         if ('=' === substr($text, 0, 1)) {
             // simple code tag
