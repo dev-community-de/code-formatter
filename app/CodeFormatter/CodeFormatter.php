@@ -19,6 +19,7 @@ abstract class CodeFormatter
         BlackPythonCodeFormatter::class,
         ClangCodeFormatter::class,
         GoCodeFormatter::class,
+        PrettierCodeFormatter::class,
     ];
 
     /**

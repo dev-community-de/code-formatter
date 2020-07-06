@@ -1,0 +1,8 @@
+{
+    "name": "code-formatter",
+    "description": "Manage JS dependencies to be used with the Code Formatter",
+    "version": "0.1.0",
+    "dependencies": {
+        "prettier": "^2.0.5"
+    }
+}

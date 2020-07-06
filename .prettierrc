@@ -1,0 +1,87 @@
+# Specification: http://json.schemastore.org/prettierrc
+# Documentation: https://prettier.io/docs/en/index.html
+
+# General settings
+useTabs: false
+tabWidth: 4
+printWidth: 120
+singleQuote: false
+trailingComma: none
+endOfLine: lf
+semi: false
+proseWrap: preserve
+
+# Language specific settings
+overrides:
+
+    -   files: "*.css"
+        options:
+            parser: css
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
+
+    -   files:
+            - "*.htm"
+            - "*.html"
+            - "*.html5"
+        options:
+            parser: html
+            singleQuote: false
+            htmlWhitespaceSensitivity: ignore
+
+    -   files:
+            - "*.js"
+            - "*.javascript"
+        options:
+            parser: babel
+            trailingComma: es5
+            semi: true
+
+    -   files:
+            - "*.json"
+        options:
+            parser: json
+            semi: false
+            trailingComma: none
+            singleQuote: false
+            quoteProps: consistent
+            tabWidth: 2
+
+    -   files:
+            - "*.less"
+        options:
+            parser: less
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
+
+    -   files:
+            - "*.md"
+            - "*.MD"
+            - "*.markdown"
+        options:
+            parser: markdown
+            proseWrap: preserve
+            htmlWhitespaceSensitivity: strict
+            quoteProps: preserve
+
+
+    -   files: "*.scss"
+        options:
+            parser: scss
+            bracketSpacing: true
+            singleQuote: false
+            htmlWhitespaceSensitivity: css
+            semi: true
+
+    -   files:
+            - "*.yaml"
+            - "*.yml"
+        options:
+            parser: yaml
+            singleQuote: false
+            tabWidth: 2
+            trailingComma: none
