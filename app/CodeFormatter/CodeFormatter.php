@@ -44,12 +44,8 @@ abstract class CodeFormatter
      */
     public function exec(string $file)
     {
-        $shell = $this->getShellCommand($file);
-        echo '> ', $shell, "\n";
-
         // execute code formatting
-        echo exec($shell, $output, $return_var), "\n";
-        echo implode("\n", $output), "\n";
+        exec($this->getShellCommand($file), $output, $return_var);
 
         if (0 !== $return_var) {
             throw new Exception('code formatting failed');
