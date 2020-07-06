@@ -18,6 +18,9 @@ class ClangCodeFormatter extends CodeFormatter
     protected static $supported_languages = [
         'c',
         'cpp',
+        'cs',
+        'java',
+        'm',
     ];
 
     /**
