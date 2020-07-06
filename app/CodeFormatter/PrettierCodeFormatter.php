@@ -3,7 +3,7 @@
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
 /**
- * Class ClangCodeFormatter
+ * Class PrettierCodeFormatter
  *
  * @package DevCommunityDE\CodeFormatter\CodeFormatter
  */
