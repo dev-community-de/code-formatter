@@ -1,14 +1,9 @@
 <?php
 
-/*
- * This file is part of the dev-community code formatter
- * (c) The dev-community.de authors
- */
-
-$header = <<<'HEADER'
-This file is part of the dev-community code formatter
-(c) The dev-community.de authors
-HEADER;
+// $header = <<<'HEADER'
+// This file is part of the dev-community code formatter
+// (c) The dev-community.de authors
+// HEADER;
 
 $finder = PhpCsFixer\Finder::create()
     ->exclude('vendor')
@@ -23,7 +18,7 @@ return PhpCsFixer\Config::create()
     '@Symfony' => true,
     'no_superfluous_phpdoc_tags' => false,
     'indentation_type' => false, // broken
-    'header_comment' => ['header' => $header],
+    // 'header_comment' => ['header' => $header],
     'blank_line_before_statement' => [
         'statements' => [],
     ],

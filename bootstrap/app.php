@@ -1,10 +1,5 @@
 <?php
 
-/*
- * This file is part of the dev-community code formatter
- * (c) The dev-community.de authors
- */
-
 use DevCommunityDE\CodeFormatter\Api\Auth\ApiAuthorizer;
 use DevCommunityDE\CodeFormatter\CodeFormatterApp;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
