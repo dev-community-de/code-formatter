@@ -16,7 +16,7 @@ abstract class CodeFormatter
      * @var array
      */
     protected static $code_formatters = [
-        BlackedPythonCodeFormatter::class,
+        BlackPythonCodeFormatter::class,
         ClangCodeFormatter::class,
         GoCodeFormatter::class,
     ];

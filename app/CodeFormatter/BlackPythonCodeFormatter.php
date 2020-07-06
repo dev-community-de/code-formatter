@@ -3,11 +3,11 @@
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
 /**
- * Class BlackedPythonCodeFormatter
+ * Class BlackPythonCodeFormatter
  *
  * @package DevCommunityDE\CodeFormatter\CodeFormatter
  */
-class BlackedPythonCodeFormatter extends CodeFormatter
+class BlackPythonCodeFormatter extends CodeFormatter
 {
 
     /**
