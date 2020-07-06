@@ -15,6 +15,11 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     apt-get install -y golang
 
+# Packages for formatting Python code
+RUN apt-get update -y && \
+    apt-get install -y python3.7-minimal python3-pip && \
+    pip3 install black
+
 # Packages for formatting code using Prettier (JS, CSS, etc)
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
