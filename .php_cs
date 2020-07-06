@@ -1,26 +1,31 @@
 <?php
 
+/*
+ * This file is part of the dev-community code formatter
+ * (c) The dev-community.de authors
+ */
+
 $header = <<<'HEADER'
 This file is part of the dev-community code formatter
 (c) The dev-community.de authors
 HEADER;
 
 $finder = PhpCsFixer\Finder::create()
-  ->exclude('vendor')
-  ->in(__DIR__);
+    ->exclude('vendor')
+    ->in(__DIR__);
 
 return PhpCsFixer\Config::create()
-  ->setFinder($finder)
-  ->setIndent('    ')
-  ->setRiskyAllowed(true)
-  ->setRules([
+    ->setFinder($finder)
+    ->setIndent('    ')
+    ->setRiskyAllowed(true)
+    ->setRules([
     '@PSR2' => true,
     '@Symfony' => true,
     'no_superfluous_phpdoc_tags' => false,
     'indentation_type' => false, // broken
     'header_comment' => ['header' => $header],
     'blank_line_before_statement' => [
-      'statements' => [],
+        'statements' => [],
     ],
     'single_blank_line_before_namespace' => false,
     'array_syntax' => ['syntax' => 'short'],
@@ -35,8 +40,8 @@ return PhpCsFixer\Config::create()
     'ordered_imports' => true,
     'concat_space' => ['spacing' => 'one'],
     'native_function_invocation' => [
-      'include' => ['@compiler_optimized'],
-      'scope' => 'namespaced',
+        'include' => ['@compiler_optimized'],
+        'scope' => 'namespaced',
     ],
     'single_line_throw' => false,
   ]);
