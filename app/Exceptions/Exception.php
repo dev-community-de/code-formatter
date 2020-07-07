@@ -3,11 +3,8 @@
 namespace DevCommunityDE\CodeFormatter\Exceptions;
 
 /**
- * Class Exception
- *
- * @package DevCommunityDE\CodeFormatter\Exceptions
+ * Class Exception.
  */
 class Exception extends \Exception
 {
-
 }

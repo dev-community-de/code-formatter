@@ -2,16 +2,11 @@
 
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
-use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
-
 /**
- * Class ClangCodeFormatter
- *
- * @package DevCommunityDE\CodeFormatter\CodeFormatter
+ * Class ClangCodeFormatter.
  */
 class ClangCodeFormatter extends CodeFormatter
 {
-
     /**
      * @var array
      */
@@ -25,11 +20,11 @@ class ClangCodeFormatter extends CodeFormatter
 
     /**
      * @param string $file
+     *
      * @return string
      */
-    protected function getShellCommand(string $file) : string
+    protected function getShellCommand(string $file): string
     {
         return 'clang-format -style=file -i ' . $file;
     }
-
 }
