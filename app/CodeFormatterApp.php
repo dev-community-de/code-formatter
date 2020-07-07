@@ -2,24 +2,21 @@
 
 namespace DevCommunityDE\CodeFormatter;
 
-use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
+use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 
 /**
- * Class CodeFormatterApp
- *
- * @package DevCommunityDE\CodeFormatter
+ * Class CodeFormatterApp.
  */
 class CodeFormatterApp
 {
-
     /**
      * @var string
      */
     protected const CODE_BLOCK_REGEX = '/(\[CODE(?:(?:=([a-z]+)?)|(?:\slang=\"?([a-z]+)\"?).*)?\])((?:.*\n?)*)/';
 
     /**
-     * code_lang => file_ext mappings
+     * code_lang => file_ext mappings.
      *
      * @var array
      */
@@ -71,9 +68,6 @@ class CodeFormatterApp
      */
     protected $code_file;
 
-    /**
-     *
-     */
     public function run()
     {
         $this->readPostContent();
@@ -83,18 +77,12 @@ class CodeFormatterApp
         $this->outputPostContent();
     }
 
-    /**
-     *
-     */
     protected function readPostContent()
     {
         // read raw input from request body
         $this->post_content = file_get_contents('php://input');
     }
 
-    /**
-     *
-     */
     protected function processPostContent()
     {
         $this->splitPostAtCodeBlockEnding();
@@ -113,9 +101,6 @@ class CodeFormatterApp
         $this->post_content = implode('[/CODE]', $this->post_content);
     }
 
-    /**
-     *
-     */
     protected function splitPostAtCodeBlockEnding()
     {
         // split post at code block ending
@@ -125,12 +110,13 @@ class CodeFormatterApp
     /**
      * @param string $block
      * @param string $key
+     *
      * @return string
      */
-    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key) : string
+    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key): string
     {
         // replace code block with formatted code block
-        return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key) : string {
+        return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key): string {
             $this->captureCodeBlockComponents($match);
 
             return $this->code_tag . $this->formatCode($key);
@@ -152,18 +138,20 @@ class CodeFormatterApp
 
     /**
      * @param string $lang
+     *
      * @return string
      */
-    protected function determineCodeLanguage(string $lang) : string
+    protected function determineCodeLanguage(string $lang): string
     {
         return self::CODE_LANG_FILE_EXT_MAPPINGS[$lang] ?: 'txt';
     }
 
     /**
      * @param string $file_key
+     *
      * @return string
      */
-    protected function formatCode(string $file_key) : string
+    protected function formatCode(string $file_key): string
     {
         $this->code_file = $this->putCodeInTempFile($file_key);
 
@@ -178,13 +166,14 @@ class CodeFormatterApp
 
     /**
      * @param string $file_key
+     *
      * @return string
      */
-    protected function putCodeInTempFile(string $file_key) : string
+    protected function putCodeInTempFile(string $file_key): string
     {
         $filename = $this->generateTempFileName($file_key);
 
-        if (file_put_contents($filename, $this->code_content) === false) {
+        if (false === file_put_contents($filename, $this->code_content)) {
             throw new Exception('failed to store code in temporary file');
         }
 
@@ -219,9 +208,10 @@ class CodeFormatterApp
 
     /**
      * @param string $file
+     *
      * @return string
      */
-    protected function getFormattedCode(string $file) : string
+    protected function getFormattedCode(string $file): string
     {
         // get formatted code
         return file_get_contents($file);
@@ -236,12 +226,8 @@ class CodeFormatterApp
         unlink($file);
     }
 
-    /**
-     *
-     */
     protected function outputPostContent()
     {
         echo $this->post_content;
     }
-
 }

@@ -5,13 +5,10 @@ namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 
 /**
- * Class CodeFormatter
- *
- * @package DevCommunityDE\CodeFormatter\CodeFormatter
+ * Class CodeFormatter.
  */
 abstract class CodeFormatter
 {
-
     /**
      * @var array
      */
@@ -29,22 +26,24 @@ abstract class CodeFormatter
 
     /**
      * @param string $code_language
+     *
      * @return self|null
      */
-    public static function create(string $code_language) : ?self
+    public static function create(string $code_language): ?self
     {
         return self::getCodeFormatterForLanguage($code_language);
     }
 
-     /**
+    /**
      * @param string $lang
+     *
      * @return self|null
      */
-    protected static function getCodeFormatterForLanguage(string $lang) : ?self
+    protected static function getCodeFormatterForLanguage(string $lang): ?self
     {
         foreach (self::$code_formatters as $code_formatter) {
             if (self::supportsLanguage($code_formatter, $lang)) {
-                return new $code_formatter;
+                return new $code_formatter();
             }
         }
 
@@ -54,11 +53,12 @@ abstract class CodeFormatter
     /**
      * @param string $code_formatter
      * @param string $lang
+     *
      * @return bool
      */
-    protected static function supportsLanguage(string $code_formatter, string $lang) : bool
+    protected static function supportsLanguage(string $code_formatter, string $lang): bool
     {
-        return in_array($lang, $code_formatter::$supported_languages);
+        return \in_array($lang, $code_formatter::$supported_languages);
     }
 
     /**
@@ -69,15 +69,15 @@ abstract class CodeFormatter
         // execute code formatting
         exec($this->getShellCommand($file), $output, $return_var);
 
-        if ($return_var !== 0) {
+        if (0 !== $return_var) {
             throw new Exception('code formatting failed');
         }
     }
 
     /**
      * @param string $file
+     *
      * @return string
      */
     abstract protected function getShellCommand(string $file);
-
 }

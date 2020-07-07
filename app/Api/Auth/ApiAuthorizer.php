@@ -3,29 +3,20 @@
 namespace DevCommunityDE\CodeFormatter\Api\Auth;
 
 /**
- * Class ApiAuthorizer
- *
- * @package DevCommunityDE\CodeFormatter\Api\Auth
+ * Class ApiAuthorizer.
  */
 class ApiAuthorizer
 {
-
     /**
      * @var string
      */
     protected $api_key;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->api_key = getenv('API_KEY') ?: '';
     }
 
-    /**
-     *
-     */
     public function authorize()
     {
         if (!$this->checkRequestMethod()) {
@@ -47,17 +38,16 @@ class ApiAuthorizer
     /**
      * @return bool
      */
-    protected function checkRequestMethod() : bool
+    protected function checkRequestMethod(): bool
     {
-        return strtoupper($_SERVER['REQUEST_METHOD']) === 'POST';
+        return 'POST' === strtoupper($_SERVER['REQUEST_METHOD']);
     }
 
     /**
      * @return bool
      */
-    protected function checkApiKey() : bool
+    protected function checkApiKey(): bool
     {
         return hash_equals($this->api_key, $_GET['api_key']);
     }
-
 }

@@ -3,13 +3,10 @@
 namespace DevCommunityDE\CodeFormatter\CodeFormatter;
 
 /**
- * Class BlackPythonCodeFormatter
- *
- * @package DevCommunityDE\CodeFormatter\CodeFormatter
+ * Class BlackPythonCodeFormatter.
  */
 class BlackPythonCodeFormatter extends CodeFormatter
 {
-
     /**
      * @var array
      */
@@ -19,9 +16,10 @@ class BlackPythonCodeFormatter extends CodeFormatter
 
     /**
      * @param string $file
+     *
      * @return string
      */
-    protected function getShellCommand(string $file) : string
+    protected function getShellCommand(string $file): string
     {
         return 'black --quiet --config ' . __DIR__ . '/../../.black-format.toml \'' . $file . '\'';
     }
