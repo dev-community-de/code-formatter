@@ -113,7 +113,7 @@ class CodeFormatterApp
      *
      * @return string
      */
-    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key): string
+    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key)  : string
     {
         // replace code block with formatted code block
         return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key): string {
@@ -126,7 +126,7 @@ class CodeFormatterApp
     /**
      * @param array $match
      */
-    protected function captureCodeBlockComponents(array $match)
+    protected function captureCodeBlockComponents (array $match)
     {
         // capture code block components (code tag, code language, actual code content)
         $this->code_tag = $match[1];
