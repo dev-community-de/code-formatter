@@ -80,7 +80,7 @@ class CodeFormatterApp
     protected function readPostContent()
     {
         // read raw input from request body
-        $this->post_content   = file_get_contents('php://input');
+        $this->post_content = file_get_contents('php://input');
     }
 
     protected function processPostContent()
@@ -113,7 +113,7 @@ class CodeFormatterApp
      *
      * @return string
      */
-    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key) : string
+    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key): string
     {
         // replace code block with formatted code block
         return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key): string {
