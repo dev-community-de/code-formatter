@@ -3,7 +3,7 @@
 return [
   'target_php_version' => '7.4',
   'directory_list' => [
-    'src',
+    'app',
     'vendor',
   ],
   'exclude_analysis_directory_list' => [
