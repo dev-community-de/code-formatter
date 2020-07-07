@@ -1,9 +1,7 @@
 name: Format (PHP)
 
 on:
-  push:
-    branches: 
-      - "master"
+  pull_request:
     paths:
       - '**.php'
 jobs:
@@ -19,6 +17,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v2.1.0
         with:
           commit_message: Apply php-cs-fixer changes
-          branch: master
+          branch: ${{ github.head_ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
