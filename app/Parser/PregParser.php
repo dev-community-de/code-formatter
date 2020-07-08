@@ -21,7 +21,7 @@ final class PregParser implements Parser
     private const RE_SPLIT = '/\[(?:\\/code|code(=\w+|(?:\s+\w+=(?:"[^"]*"|\S+))*))\]/i';
 
     /** pattern used to tokenize attributes */
-    private const RE_ATTRS = '/\A\s*(\w+)=("[^"]*"|\S+)/';
+    private const RE_ATTRS = '/\G\s*(\w+)=("[^"]*"|\S+)/';
 
     /**
      * {@inheritdoc}
