@@ -11,7 +11,7 @@ class BlackPythonCodeFormatter extends CodeFormatter
      * @var array
      */
     protected static $supported_languages = [
-        'py',
+        'python',
     ];
 
     /**
