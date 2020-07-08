@@ -80,7 +80,13 @@ class CodeFormatterApp
     protected function readPostContent()
     {
         // read raw input from request body
-        $this->post_content = file_get_contents('php://input');
+        $content = file_get_contents('php://input');
+
+        if (false === $content) {
+            throw new Exception('unable to read from stdin');
+        }
+
+        $this->post_content = $content;
     }
 
     protected function processPostContent()
@@ -104,6 +110,7 @@ class CodeFormatterApp
     protected function splitPostAtCodeBlockEnding()
     {
         // split post at code block ending
+        \assert(\is_string($this->post_content)); // FIXME
         $this->post_content = preg_split('/\[\/CODE\]/', $this->post_content);
     }
 
@@ -214,7 +221,13 @@ class CodeFormatterApp
     protected function getFormattedCode(string $file): string
     {
         // get formatted code
-        return file_get_contents($file);
+        $content = file_get_contents($file);
+
+        if (false === $content) {
+            throw new Exception('unable to read file: ' . $file);
+        }
+
+        return $content;
     }
 
     /**

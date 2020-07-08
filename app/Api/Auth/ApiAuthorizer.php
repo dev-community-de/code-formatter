@@ -48,6 +48,8 @@ class ApiAuthorizer
      */
     protected function checkApiKey(): bool
     {
-        return hash_equals($this->api_key, $_GET['api_key']);
+        $user_api_key = $_GET['api_key'];
+        \assert(\is_string($user_api_key));
+        return hash_equals($this->api_key, $user_api_key);
     }
 }
