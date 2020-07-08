@@ -21,7 +21,7 @@ class CodeFormatterApp
      * @var array
      */
     protected const CODE_LANG_FILE_EXT_MAPPINGS = [
-        'c' => 'c',
+        'c'   => 'c',
         'cpp' => 'cpp',
         'csharp' => 'cs',
         'css' => 'css',
