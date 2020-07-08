@@ -3,6 +3,7 @@
 namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
+use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\PregParser;
 use DevCommunityDE\CodeFormatter\Parser\Token;
@@ -46,7 +47,7 @@ class CodeFormatterApp
     /**
      * constructs the app.
      *
-     * @param Parser $parser
+     * @param Parser|null $parser
      */
     public function __construct(Parser $parser = null)
     {
@@ -105,6 +106,10 @@ class CodeFormatterApp
         $formatter->exec($filename);
         $result = file_get_contents($filename);
         unlink($filename);
+
+        if (false === $result) {
+            throw new Exception('could not read result from: ' . $filename);
+        }
 
         return $this->exportToken($token, $result);
     }

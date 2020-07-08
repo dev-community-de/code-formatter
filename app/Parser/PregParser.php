@@ -130,7 +130,7 @@ final class PregParser implements Parser
         switch (substr($value, 0, 1)) {
             case '"':
             case "'":
-                return substr($value, 1, -1);
+                return substr($value, 1, -1) ?: '';
             default:
                 return $value;
         }
