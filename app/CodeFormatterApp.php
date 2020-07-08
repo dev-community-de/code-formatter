@@ -22,7 +22,7 @@ class CodeFormatterApp
      */
     protected const CODE_LANG_FILE_EXT_MAPPINGS = [
         'c'   => 'c',
-        'cpp' => 'cpp',
+        'cpp'   => 'cpp',
         'csharp' => 'cs',
         'css' => 'css',
         'go' => 'go',
