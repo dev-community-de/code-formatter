@@ -4,19 +4,13 @@ on:
   pull_request:
     paths:
       - '**.php'
+
 jobs:
   php-cs-fixer:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
       - name: Run php-cs-fixer
         uses: docker://oskarstark/php-cs-fixer-ga
-
-      - name: "Commit modified files"
-        uses: stefanzweifel/git-auto-commit-action@v2.1.0
         with:
-          commit_message: Apply php-cs-fixer changes
-          branch: ${{ github.head_ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          args: --dry-run --diff --config=./.php-cs
