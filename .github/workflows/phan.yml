@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "**.php"
+
 jobs:
   phan:
     runs-on: ubuntu-latest
