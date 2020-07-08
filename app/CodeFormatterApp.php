@@ -192,11 +192,11 @@ class CodeFormatterApp
      */
     protected function generateTempFileName(string $file_key)
     {
-        // generate sha256-hashed unique filename based on code content and key for specific part of post content
-        $filename = hash('sha256', $this->code_content . uniqid($file_key));
-        $file_extension = '.' . $this->code_language;
+        $filename = tempnam(__DIR__ . '/../storage/code', $file_key);
+        rename($filename, $filename .= '.' . $this->code_language);
+        @chmod($filename, 0666);
 
-        return __DIR__ . '/../storage/code/' . $filename . $file_extension;
+        return $filename;
     }
 
     /**
