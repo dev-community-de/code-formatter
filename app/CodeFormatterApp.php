@@ -89,7 +89,8 @@ class CodeFormatterApp
 
         foreach ($this->post_content as $key => $block) {
             try {
-                $this->post_content[$key] = $this->replaceCodeBlockWithFormattedCodeBlock($block, $key);
+                $this->post_content[$key] = $this
+                    ->replaceCodeBlockWithFormattedCodeBlock($block, $key);
             } catch (Exception $e) {
                 $this->deleteTempCodeFile($this->code_file);
 
