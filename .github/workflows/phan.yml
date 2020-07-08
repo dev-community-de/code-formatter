@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install PHP and dependencies
-        run: apt update && apt install -y php-cli php-json php-hash php-iconv php-openssl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php-cli php-json php-hash php-iconv php-openssl
       - name: Install php-composer
         run: |
           php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
