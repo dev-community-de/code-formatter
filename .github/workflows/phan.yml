@@ -15,7 +15,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php7.4-cli php7.4-json php7.4-iconv php7.4-curl php-ast
           sudo phpenmod -v 7.4 json iconv curl ast
-          sudo php -m | grep xdebug && phpdismod -v 7.4 xdebug
+          sudo php -m | grep xdebug && sudo phpdismod -v 7.4 xdebug
       - name: Install php-composer
         run: |
           php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
