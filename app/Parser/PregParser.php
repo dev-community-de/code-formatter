@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the DevCom Async Code Formatter
- * (c) The dev-community.de authors
- */
-
 namespace DevCommunityDE\CodeFormatter\Parser;
 
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
