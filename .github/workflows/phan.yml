@@ -1,0 +1,22 @@
+name: Static analysis (phan)
+
+on:
+  pull_request:
+    paths:
+      - "**.php"
+jobs:
+  phan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install PHP and dependencies
+      run: apt update && apt install -y php-cli php-json php-hash php-iconv php-openssl
+    - name: Install php-composer
+      run: |
+        php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+        php composer-setup.php --install-dir=/usr/local/bin
+        php -r "unlink('composer-setup.php');"
+    - uses: actions/checkout@v2
+    - name: Install composer packages
+      run: composer install
+    - name: Run phan from vendor folder
+      run: vendor/bin/phan
