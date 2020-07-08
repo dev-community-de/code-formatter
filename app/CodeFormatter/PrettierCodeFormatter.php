@@ -13,10 +13,10 @@ class PrettierCodeFormatter extends CodeFormatter
     protected static $supported_languages = [
         'css',
         'html',
-        'js',
+        'javascript',
         'json',
         'less',
-        'md',
+        'markdown',
         'scss',
         'yaml',
     ];

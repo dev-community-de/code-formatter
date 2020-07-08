@@ -4,6 +4,9 @@ namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
+use DevCommunityDE\CodeFormatter\Parser\Parser;
+use DevCommunityDE\CodeFormatter\Parser\PregParser;
+use DevCommunityDE\CodeFormatter\Parser\Token;
 
 /**
  * Class CodeFormatterApp.
@@ -11,16 +14,11 @@ use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 class CodeFormatterApp
 {
     /**
-     * @var string
-     */
-    protected const CODE_BLOCK_REGEX = '/(\[CODE(?:(?:=([a-z]+)?)|(?:\slang=\"?([a-z]+)\"?).*)?\])((?:.*\n?)*)/';
-
-    /**
      * code_lang => file_ext mappings.
      *
      * @var array
      */
-    protected const CODE_LANG_FILE_EXT_MAPPINGS = [
+    private const EXT_MAPPING = [
         'c' => 'c',
         'cpp' => 'cpp',
         'csharp' => 'cs',
@@ -43,204 +41,107 @@ class CodeFormatterApp
         'yaml' => 'yaml',
     ];
 
-    /**
-     * @var string|array
-     */
-    protected $post_content;
+    /** @var Parser */
+    private $parser;
 
     /**
-     * @var string
+     * constructs the app.
+     *
+     * @param Parser|null $parser
      */
-    protected $code_tag;
+    public function __construct(Parser $parser = null)
+    {
+        $this->parser = $parser ?? new PregParser();
+    }
 
     /**
-     * @var string
+     * runs the application.
+     *
+     * @return void
      */
-    protected $code_language;
-
-    /**
-     * @var string
-     */
-    protected $code_content;
-
-    /**
-     * @var string
-     */
-    protected $code_file;
-
     public function run()
     {
-        $this->readPostContent();
+        $tokens = $this->parseInput();
 
-        $this->processPostContent();
-
-        $this->outputPostContent();
+        foreach ($tokens as $token) {
+            echo $this->formatToken($token);
+        }
     }
 
-    protected function readPostContent()
+    /**
+     * parses the code from stdin.
+     *
+     * @return iterable<Token>
+     */
+    private function parseInput(): iterable
     {
-        // read raw input from request body
-        $content = file_get_contents('php://input');
+        return $this->parser->parseFile('php://input');
+    }
 
-        if (false === $content) {
-            throw new Exception('unable to read from stdin');
+    /**
+     * formats a token based on its type and language.
+     *
+     * @param Token $token
+     *
+     * @return string
+     */
+    private function formatToken(Token $token): string
+    {
+        if ($token->isText()) {
+            return $token->getBody();
         }
 
-        $this->post_content = $content;
-    }
+        $language = $token->getAttribute('lang');
+        \assert(null !== $language);
 
-    protected function processPostContent()
-    {
-        $this->splitPostAtCodeBlockEnding();
-
-        foreach ($this->post_content as $key => $block) {
-            try {
-                $this->post_content[$key] = $this->replaceCodeBlockWithFormattedCodeBlock($block, $key);
-            } catch (Exception $e) {
-                $this->deleteTempCodeFile($this->code_file);
-
-                continue;
-            }
+        $formatter = CodeFormatter::create($language);
+        if (null === $formatter) {
+            // no formatter found, return token as is
+            return $this->exportToken($token, null);
         }
 
-        // recompose post content
-        $this->post_content = implode('[/CODE]', $this->post_content);
-    }
+        $filename = $this->createFilename($language);
 
-    protected function splitPostAtCodeBlockEnding()
-    {
-        // split post at code block ending
-        \assert(\is_string($this->post_content)); // FIXME
-        $this->post_content = preg_split('/\[\/CODE\]/', $this->post_content);
-    }
+        file_put_contents($filename, $token->getBody());
+        $formatter->exec($filename);
+        $result = file_get_contents($filename);
+        unlink($filename);
 
-    /**
-     * @param string $block
-     * @param string $key
-     *
-     * @return string
-     */
-    protected function replaceCodeBlockWithFormattedCodeBlock(string $block, string $key): string
-    {
-        // replace code block with formatted code block
-        return preg_replace_callback(self::CODE_BLOCK_REGEX, function (array $match) use ($key): string {
-            $this->captureCodeBlockComponents($match);
-
-            return $this->code_tag . $this->formatCode($key);
-        }, $block);
-    }
-
-    /**
-     * @param array $match
-     */
-    protected function captureCodeBlockComponents(array $match)
-    {
-        // capture code block components (code tag, code language, actual code content)
-        $this->code_tag = $match[1];
-        $this->code_content = $match[4];
-
-        $specified_code_lang = $match[2] ?: $match[3];
-        $this->code_language = $this->determineCodeLanguage($specified_code_lang);
-    }
-
-    /**
-     * @param string $lang
-     *
-     * @return string
-     */
-    protected function determineCodeLanguage(string $lang): string
-    {
-        return self::CODE_LANG_FILE_EXT_MAPPINGS[$lang] ?: 'txt';
-    }
-
-    /**
-     * @param string $file_key
-     *
-     * @return string
-     */
-    protected function formatCode(string $file_key): string
-    {
-        $this->code_file = $this->putCodeInTempFile($file_key);
-
-        $this->executeCodeFormatting($this->code_file);
-
-        $code = $this->getFormattedCode($this->code_file);
-
-        $this->deleteTempCodeFile($this->code_file);
-
-        return $code;
-    }
-
-    /**
-     * @param string $file_key
-     *
-     * @return string
-     */
-    protected function putCodeInTempFile(string $file_key): string
-    {
-        $filename = $this->generateTempFileName($file_key);
-
-        if (false === file_put_contents($filename, $this->code_content)) {
-            throw new Exception('failed to store code in temporary file');
+        if (false === $result) {
+            throw new Exception('could not read result from: ' . $filename);
         }
 
-        return $filename;
+        return $this->exportToken($token, $result);
     }
 
     /**
-     * @param string $file_key
+     * exports a token.
+     *
+     * @param Token       $token
+     * @param string|null $body
+     *
+     * @return string
      */
-    protected function generateTempFileName(string $file_key)
+    private function exportToken(Token $token, ?string $body): string
     {
-        $filename = tempnam(__DIR__ . '/../storage/code', $file_key);
-        rename($filename, $filename .= '.' . $this->code_language);
+        return $this->parser->exportToken($token, $body);
+    }
+
+    /**
+     * creates a (somewhat) unique filename used to dump the code
+     * for the formatter.
+     *
+     * @param string $language
+     *
+     * @return string
+     */
+    private function createFilename(string $language): string
+    {
+        $extension = self::EXT_MAPPING[$language] ?? 'txt';
+        $filename = tempnam(__DIR__ . '/../storage/code', 'code-formatter');
+        rename($filename, $filename .= '.' . $extension);
         @chmod($filename, 0666);
 
         return $filename;
-    }
-
-    /**
-     * @param string $file
-     */
-    protected function executeCodeFormatting(string $file)
-    {
-        $code_formatter = CodeFormatter::create($this->code_language);
-
-        if (!$code_formatter) {
-            throw new Exception('No code formatter for given language found');
-        }
-
-        $code_formatter->exec($file);
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return string
-     */
-    protected function getFormattedCode(string $file): string
-    {
-        // get formatted code
-        $content = file_get_contents($file);
-
-        if (false === $content) {
-            throw new Exception('unable to read file: ' . $file);
-        }
-
-        return $content;
-    }
-
-    /**
-     * @param string $file
-     */
-    protected function deleteTempCodeFile(string $file)
-    {
-        // delete temporary code file
-        unlink($file);
-    }
-
-    protected function outputPostContent()
-    {
-        echo $this->post_content;
     }
 }
