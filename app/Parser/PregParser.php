@@ -145,7 +145,7 @@ final class PregParser implements Parser
             return $body ?: $token->getBody();
         }
 
-        $buffer = '[code';
+        $buffer = '[CODE';
         $attrMap = $token->getAttributes();
 
         foreach ($attrMap as $name => $value) {
@@ -154,6 +154,6 @@ final class PregParser implements Parser
 
         $buffer .= ']';
         $buffer .= $body ?: $token->getBody();
-        return $buffer . '[/code]';
+        return $buffer . '[/CODE]';
     }
 }
