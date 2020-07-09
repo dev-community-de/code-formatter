@@ -2,8 +2,7 @@
     "name": "dev-community/code-formatter",
     "description": "A simple web app to format code in XenForo forum posts",
     "require": {
-        "php": ">=7.3",
-        "phan/phan": "^3.0"
+        "php": "^7.4"
     },
     "autoload": {
         "psr-4": {
@@ -11,6 +10,7 @@
         }
     },
     "require-dev": {
-        "symfony/var-dumper": "^5.0"
+        "symfony/var-dumper": "^5.0",
+        "phan/phan": "^3.0"
     }
 }
