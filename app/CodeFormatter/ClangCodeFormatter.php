@@ -19,8 +19,6 @@ class ClangCodeFormatter extends CodeFormatter
     ];
 
     /**
-     * @param string $file
-     *
      * @return string
      */
     protected function getShellCommand(): string

@@ -64,7 +64,7 @@ abstract class CodeFormatter
         $proc = proc_open($shell, $specs, $pipes);
 
         if (false === $proc) {
-            throw new Exception('unable to open process: ' . $shell);
+            throw new Exception("unable to open process: {$shell}");
         }
 
         fwrite($pipes[0], $content);
@@ -77,8 +77,8 @@ abstract class CodeFormatter
 
         $return = proc_close($proc);
 
-        if (0 !== $return) {
-            throw new Exception("code formatting failed! stderr: ${errors}");
+        if (0 !== $return || false === $result) {
+            throw new Exception("code formatting failed! stderr: {$errors}");
         }
 
         return $result;
