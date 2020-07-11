@@ -62,6 +62,13 @@ final class Parser
                     // we add 1 to the span, because we know that
                     // at least the current '[' did not start a bbcode
                     $span = $offset - $start + 1;
+                    if ($offset + 2 === $length) {
+                        // edge case:
+                        // last token in input is a '['
+                        // there is no need to check if this token
+                        // starts a bbcode
+                        ++$span;
+                    }
                     $offset = $start;
                 }
                 $body = substr($textData, $offset, $span);
@@ -161,12 +168,7 @@ final class Parser
         \assert($node instanceof ElemNode);
         $bbcode = $node->getName();
         $buffer = "[{$bbcode}";
-
-        $attrMap = $node->getAttrs();
-        if ($attrMap->hasMatch()) {
-            $buffer .= $attrMap->getMatch();
-        }
-
+        $buffer .= $node->getAttrs();
         $buffer .= ']';
         $buffer .= $body ?: $node->getBody();
         return $buffer . "[/{$bbcode}]";

@@ -60,4 +60,14 @@ final class ElemAttrs
     {
         return !empty($this->match);
     }
+
+    /**
+     * returns the matched attributes as string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->match;
+    }
 }
