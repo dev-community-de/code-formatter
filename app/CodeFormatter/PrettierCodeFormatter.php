@@ -10,7 +10,7 @@ class PrettierCodeFormatter extends CodeFormatter
     /**
      * @var array
      */
-    protected static $supported_languages = [
+    protected const LANGUAGES = [
         'css',
         'html',
         'javascript',
@@ -24,13 +24,25 @@ class PrettierCodeFormatter extends CodeFormatter
     /**
      * Config is taken automatically from <code>.prettierrc</code> file.
      *
-     * @param string $file
-     *                     {@internal <code>--loglevel silent</code> does not override exit codes}
+     * @internal <code>--loglevel silent</code> does not override exit codes
      *
      * @return string
      */
-    protected function getShellCommand(string $file): string
+    protected function getShellCommand(): string
     {
-        return __DIR__ . '/../../node_modules/.bin/prettier --loglevel silent --write \'' . $file . '\'';
+        $filename = 'format.';
+
+        switch ($this->language) {
+            case 'javascipt':
+                $filename .= 'js';
+                break;
+            case 'markdown':
+                $filename .= 'md';
+                break;
+            default:
+                $filename .= $this->language;
+        }
+
+        return 'npx prettier --loglevel silent --stdin --stdin-filepath ' . $filename;
     }
 }

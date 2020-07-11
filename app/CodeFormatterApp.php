@@ -3,7 +3,6 @@
 namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
-use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\PregParser;
 use DevCommunityDE\CodeFormatter\Parser\Token;
@@ -13,34 +12,6 @@ use DevCommunityDE\CodeFormatter\Parser\Token;
  */
 class CodeFormatterApp
 {
-    /**
-     * code_lang => file_ext mappings.
-     *
-     * @var array
-     */
-    private const EXT_MAPPING = [
-        'c' => 'c',
-        'cpp' => 'cpp',
-        'csharp' => 'cs',
-        'css' => 'css',
-        'go' => 'go',
-        'html' => 'html',
-        'java' => 'java',
-        'javascript' => 'js',
-        'json' => 'json',
-        'less' => 'less',
-        'markdown' => 'md',
-        'objectivec' => 'm',
-        'php' => 'php',
-        'python' => 'py',
-        'ruby' => 'rb',
-        'sass' => 'sass',
-        'scss' => 'scss',
-        'sql' => 'sql',
-        'swift' => 'swift',
-        'yaml' => 'yaml',
-    ];
-
     /** @var Parser */
     private $parser;
 
@@ -100,17 +71,7 @@ class CodeFormatterApp
             return $this->exportToken($token, null);
         }
 
-        $filename = $this->createFilename($language);
-
-        file_put_contents($filename, $token->getBody());
-        $formatter->exec($filename);
-        $result = file_get_contents($filename);
-        unlink($filename);
-
-        if (false === $result) {
-            throw new Exception('could not read result from: ' . $filename);
-        }
-
+        $result = $formatter->exec($token->getBody());
         return $this->exportToken($token, $result);
     }
 
@@ -125,23 +86,5 @@ class CodeFormatterApp
     private function exportToken(Token $token, ?string $body): string
     {
         return $this->parser->exportToken($token, $body);
-    }
-
-    /**
-     * creates a (somewhat) unique filename used to dump the code
-     * for the formatter.
-     *
-     * @param string $language
-     *
-     * @return string
-     */
-    private function createFilename(string $language): string
-    {
-        $extension = self::EXT_MAPPING[$language] ?? 'txt';
-        $filename = tempnam(__DIR__ . '/../storage/code', 'code-formatter');
-        rename($filename, $filename .= '.' . $extension);
-        @chmod($filename, 0666);
-
-        return $filename;
     }
 }
