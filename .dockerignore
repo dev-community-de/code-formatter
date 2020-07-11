@@ -8,7 +8,6 @@ README.md
 composer.json
 composer.lock
 .php_cs
-.php_cs.cache
 .phan
 cloudbuild.yaml
 .github
