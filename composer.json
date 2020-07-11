@@ -2,7 +2,7 @@
     "name": "dev-community/code-formatter",
     "description": "A simple web app to format code in XenForo forum posts",
     "require": {
-        "php": ">=7.4"
+        "php": "^7.4"
     },
     "autoload": {
         "psr-4": {
