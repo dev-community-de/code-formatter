@@ -11,6 +11,7 @@
     },
     "require-dev": {
         "symfony/var-dumper": "^5.0",
+        "phpunit/phpunit": "^9.2",
         "phan/phan": "^3.0"
     }
 }
