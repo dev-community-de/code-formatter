@@ -3,8 +3,9 @@
 namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
+use DevCommunityDE\CodeFormatter\Parser\CodeToken;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
-use DevCommunityDE\CodeFormatter\Parser\PregParser;
+use DevCommunityDE\CodeFormatter\Parser\TextToken;
 use DevCommunityDE\CodeFormatter\Parser\Token;
 
 /**
@@ -22,7 +23,7 @@ class CodeFormatterApp
      */
     public function __construct(Parser $parser = null)
     {
-        $this->parser = $parser ?? new PregParser();
+        $this->parser = $parser ?? new Parser();
     }
 
     /**
@@ -58,13 +59,17 @@ class CodeFormatterApp
      */
     private function formatToken(Token $token): string
     {
-        if ($token->isText()) {
+        if ($token instanceof TextToken) {
             return $token->getBody();
         }
 
-        $language = $token->getAttribute('lang');
-        \assert(null !== $language);
+        \assert($token instanceof CodeToken);
+        if ($token->hasName('PLAIN')) {
+            // export plain codes as-is
+            return $this->exportToken($token, null);
+        }
 
+        $language = $this->detectLang($token);
         $formatter = CodeFormatter::create($language);
         if (null === $formatter) {
             // no formatter found, return token as is
@@ -73,6 +78,22 @@ class CodeFormatterApp
 
         $result = $formatter->exec($token->getBody());
         return $this->exportToken($token, $result);
+    }
+
+    /**
+     * detects a [code] language.
+     *
+     * @param CodeToken $token
+     *
+     * @return string
+     */
+    private function detectLang(CodeToken $token): string
+    {
+        return
+            $token->getAttr('lang')   /* lang="..." */ ??
+            $token->getAttr('@value') /* =lang */      ??
+            'text'                    /* undefined */
+        ;
     }
 
     /**
