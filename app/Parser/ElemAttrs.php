@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace DevCommunityDE\CodeFormatter\Parser;
 
 /**
- * this class represents token attributes in a
+ * this class represents element attributes in a
  * raw (match) and a tokenized (pairs) form.
  *
  * @internal
  */
-final class TokenAttrs
+final class ElemAttrs
 {
     /** @var string */
     private $match;
