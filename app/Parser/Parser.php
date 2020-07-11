@@ -72,17 +72,17 @@ final class Parser
                     $offset = $start;
                 }
                 $body = substr($textData, $offset, $span);
-                yield new TextNode($body);
                 $offset += $span;
+                yield new TextNode($body);
                 continue;
             }
             // read from $textData until we see a closing tag
             $name = $m[1];
             $attrs = $this->parseAttrs($m[2]);
             $start = $offset + \strlen($m[0]);
-            $close = "[/{$name}]";
-            $span = stripos($textData, $close, $start);
-            if (false === $span) {
+            $needle = "[/{$name}]";
+            $position = stripos($textData, $needle, $start);
+            if (false === $position) {
                 // edge case:
                 // no closing tag found... tread the rest of the input
                 // as bbcode-body and stop the iteration
@@ -90,9 +90,9 @@ final class Parser
                 yield new ElemNode($name, $attrs, $body);
                 break;
             }
-            $body = substr($textData, $start, ($span - $start));
+            $body = substr($textData, $start, ($position - $start));
+            $offset = $position + \strlen($needle);
             yield new ElemNode($name, $attrs, $body);
-            $offset = $span + \strlen($close);
         }
     }
 
