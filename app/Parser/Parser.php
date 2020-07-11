@@ -21,7 +21,7 @@ final class Parser
     /**
      * @param string $filePath
      *
-     * @return iterable<Token>
+     * @return iterable<Node>
      */
     public function parseFile(string $filePath): iterable
     {
@@ -37,7 +37,7 @@ final class Parser
     /**
      * @param string $textData
      *
-     * @return @return iterable<Token>
+     * @return iterable<Node>
      */
     public function parseText(string $textData): iterable
     {
@@ -49,28 +49,23 @@ final class Parser
                 $span = strcspn($textData, '[', $offset);
                 if (0 === $span) {
                     // we're looking at a '[' but did not match a bbcode
+                    // this algorithm optimizes consecutive '[' tokens
                     $start = $offset;
-                    while (($offset + 1) < $length) {
-                        // try again at next offset
-                        $span = strcspn($textData, '[', ++$offset);
-                        if ($span > 0) {
+                    while (($offset + 2) < $length) {
+                        if ('[' !== $textData[$offset + 2]) {
+                            // stop folding '[' tokens, because the next
+                            // iteration has to check for a bbcode again
                             break;
                         }
+                        ++$offset;
                     }
-                    if (0 === $span) {
-                        // edge case:
-                        // we could not match anything, this means
-                        // the rest of $textData contains only '['
-                        $body = substr($textData, $start);
-                        yield new TextToken($body);
-                        break;
-                    }
-                    // calculate actual span
-                    $span += $offset - $start;
+                    // we add 1 to the span, because we know that
+                    // at least the current '[' did not start a bbcode
+                    $span = $offset - $start + 1;
                     $offset = $start;
                 }
                 $body = substr($textData, $offset, $span);
-                yield new TextToken($body);
+                yield new TextNode($body);
                 $offset += $span;
                 continue;
             }
@@ -82,14 +77,14 @@ final class Parser
             $span = stripos($textData, $close, $start);
             if (false === $span) {
                 // edge case:
-                // no closing tag found... tread the rest of the text
-                // as bbcode-body and break
+                // no closing tag found... tread the rest of the input
+                // as bbcode-body and stop the iteration
                 $body = substr($textData, $start);
-                yield new CodeToken($name, $attrs, $body);
+                yield new ElemNode($name, $attrs, $body);
                 break;
             }
             $body = substr($textData, $start, ($span - $start));
-            yield new CodeToken($name, $attrs, $body);
+            yield new ElemNode($name, $attrs, $body);
             $offset = $span + \strlen($close);
         }
     }
@@ -99,21 +94,21 @@ final class Parser
      *
      * @param string $attrs
      *
-     * @return TokenAttrs
+     * @return ElemAttrs
      */
-    private function parseAttrs(string $attrs): TokenAttrs
+    private function parseAttrs(string $attrs): ElemAttrs
     {
         $pairs = [];
         $match = $attrs;
 
         if (empty($attrs = trim($attrs))) {
-            return new TokenAttrs($match, $pairs);
+            return new ElemAttrs($match, $pairs);
         }
 
         if ('=' === substr($attrs, 0, 1)) {
             // [bbcode=value] notation
             $pairs['@value'] = substr($attrs, 1);
-            return new TokenAttrs($match, $pairs);
+            return new ElemAttrs($match, $pairs);
         }
 
         $offset = 0;
@@ -128,7 +123,7 @@ final class Parser
             $offset += \strlen($m[0]);
         }
 
-        return new TokenAttrs($match, $pairs);
+        return new ElemAttrs($match, $pairs);
     }
 
     /**
@@ -150,28 +145,30 @@ final class Parser
     }
 
     /**
-     * @param Token       $token
+     * exports node.
+     *
+     * @param Node        $node
      * @param string|null $body
      *
      * @return string
      */
-    public function exportToken(Token $token, ?string $body): string
+    public function exportNode(Node $node, ?string $body): string
     {
-        if ($token instanceof TextToken) {
-            return $body ?: $token->getBody();
+        if ($node instanceof TextNode) {
+            return $body ?: $node->getBody();
         }
 
-        \assert($token instanceof CodeToken);
-        $bbcode = $token->getName();
+        \assert($node instanceof ElemNode);
+        $bbcode = $node->getName();
         $buffer = "[{$bbcode}";
 
-        $attrMap = $token->getAttrs();
+        $attrMap = $node->getAttrs();
         if ($attrMap->hasMatch()) {
             $buffer .= $attrMap->getMatch();
         }
 
         $buffer .= ']';
-        $buffer .= $body ?: $token->getBody();
+        $buffer .= $body ?: $node->getBody();
         return $buffer . "[/{$bbcode}]";
     }
 }

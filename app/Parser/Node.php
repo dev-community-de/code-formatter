@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace DevCommunityDE\CodeFormatter\Parser;
 
-abstract class Token
+abstract class Node
 {
-    /** text token */
-    public const T_TEXT = 1;
+    /** text node */
+    public const KIND_TEXT = 1;
 
-    /** bbcode token */
-    public const T_CODE = 2;
+    /** element node (bbcode) */
+    public const KIND_ELEM = 2;
 
     /** @var int */
     private $kind;

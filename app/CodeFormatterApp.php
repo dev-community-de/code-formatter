@@ -3,10 +3,10 @@
 namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
-use DevCommunityDE\CodeFormatter\Parser\CodeToken;
+use DevCommunityDE\CodeFormatter\Parser\ElemNode;
+use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
-use DevCommunityDE\CodeFormatter\Parser\TextToken;
-use DevCommunityDE\CodeFormatter\Parser\Token;
+use DevCommunityDE\CodeFormatter\Parser\TextNode;
 
 /**
  * Class CodeFormatterApp.
@@ -33,17 +33,17 @@ class CodeFormatterApp
      */
     public function run()
     {
-        $tokens = $this->parseInput();
+        $nodes = $this->parseInput();
 
-        foreach ($tokens as $token) {
-            echo $this->formatToken($token);
+        foreach ($nodes as $node) {
+            echo $this->formatNode($node);
         }
     }
 
     /**
      * parses the code from stdin.
      *
-     * @return iterable<Token>
+     * @return iterable<Node>
      */
     private function parseInput(): iterable
     {
@@ -53,59 +53,64 @@ class CodeFormatterApp
     /**
      * formats a token based on its type and language.
      *
-     * @param Token $token
+     * @param Node $node
      *
      * @return string
      */
-    private function formatToken(Token $token): string
+    private function formatNode(Node $node): string
     {
-        if ($token instanceof TextToken) {
-            return $token->getBody();
+        if ($node instanceof TextNode) {
+            return $node->getBody();
         }
 
-        \assert($token instanceof CodeToken);
-        if ($token->hasName('PLAIN')) {
-            // export plain codes as-is
-            return $this->exportToken($token, null);
+        \assert($node instanceof ElemNode);
+
+        if (!$node->isCode()) {
+            // export node as-is (PLAIN bbcode)
+            return $this->exportNode($node, null);
         }
 
-        $language = $this->detectLang($token);
+        $language = $this->detectLang($node);
         $formatter = CodeFormatter::create($language);
         if (null === $formatter) {
-            // no formatter found, return token as is
-            return $this->exportToken($token, null);
+            // no formatter found, return node as is
+            return $this->exportNode($node, null);
         }
 
-        $result = $formatter->exec($token->getBody());
-        return $this->exportToken($token, $result);
+        $result = $formatter->exec($node->getBody());
+        return $this->exportNode($node, $result);
     }
 
     /**
-     * detects a [code] language.
+     * detect a code-language form the given node.
      *
-     * @param CodeToken $token
+     * @param ElemNode $node
      *
      * @return string
      */
-    private function detectLang(CodeToken $token): string
+    private function detectLang(ElemNode $node): string
     {
-        return
-            $token->getAttr('lang')   /* lang="..." */ ??
-            $token->getAttr('@value') /* =lang */      ??
-            'text'                    /* undefined */
-        ;
+        $value = $node->getAttr('lang');
+
+        if (empty($value)) {
+            // check if a immediate value is set
+            // (this is the [code=lang] notation)
+            $value = $node->getAttr('@value');
+        }
+
+        return $value ?: 'text';
     }
 
     /**
-     * exports a token.
+     * exports a node.
      *
-     * @param Token       $token
+     * @param Node        $Noe
      * @param string|null $body
      *
      * @return string
      */
-    private function exportToken(Token $token, ?string $body): string
+    private function exportNode(Node $node, ?string $body): string
     {
-        return $this->parser->exportToken($token, $body);
+        return $this->parser->exportNode($node, $body);
     }
 }
