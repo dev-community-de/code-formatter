@@ -71,7 +71,7 @@ final class Parser
                     }
                     $offset = $start;
                 }
-                $body = substr($textData, $offset, $span);
+                $body = substr($textData, $offset, $span) ?: '';
                 $offset += $span;
                 yield new TextNode($body);
                 continue;
@@ -86,11 +86,11 @@ final class Parser
                 // edge case:
                 // no closing tag found... tread the rest of the input
                 // as bbcode-body and stop the iteration
-                $body = substr($textData, $start);
+                $body = substr($textData, $start) ?: '';
                 yield new ElemNode($name, $attrs, $body);
                 break;
             }
-            $body = substr($textData, $start, ($position - $start));
+            $body = substr($textData, $start, ($position - $start)) ?: '';
             $offset = $position + \strlen($needle);
             yield new ElemNode($name, $attrs, $body);
         }

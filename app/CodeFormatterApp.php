@@ -104,7 +104,7 @@ class CodeFormatterApp
     /**
      * exports a node.
      *
-     * @param Node        $Noe
+     * @param Node        $node
      * @param string|null $body
      *
      * @return string
