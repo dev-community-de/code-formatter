@@ -10,7 +10,7 @@ class ClangCodeFormatter extends CodeFormatter
     /**
      * @var array
      */
-    protected static $supported_languages = [
+    protected const LANGUAGES = [
         'c',
         'cpp',
         'csharp',
@@ -19,12 +19,23 @@ class ClangCodeFormatter extends CodeFormatter
     ];
 
     /**
-     * @param string $file
-     *
      * @return string
      */
-    protected function getShellCommand(string $file): string
+    protected function getShellCommand(): string
     {
-        return 'clang-format -style=file -i ' . $file;
+        $filename = 'format.';
+
+        switch ($this->language) {
+            case 'csharp':
+                $filename .= 'cs';
+                break;
+            case 'objectivec':
+                $filename .= 'm';
+                break;
+            default:
+                $filename .= $this->language;
+        }
+
+        return 'clang-format --style=file --assume-filename=' . $filename;
     }
 }

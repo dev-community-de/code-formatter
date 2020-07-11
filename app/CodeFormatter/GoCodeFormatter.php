@@ -10,17 +10,15 @@ class GoCodeFormatter extends CodeFormatter
     /**
      * @var array
      */
-    protected static $supported_languages = [
+    protected const LANGUAGES = [
         'go',
     ];
 
     /**
-     * @param string $file
-     *
      * @return string
      */
-    protected function getShellCommand(string $file): string
+    protected function getShellCommand(): string
     {
-        return 'gofmt -w ' . $file;
+        return 'gofmt';
     }
 }
