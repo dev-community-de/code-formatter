@@ -7,35 +7,12 @@ use DevCommunityDE\CodeFormatter\Parser\ElemNode;
 use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\TextNode;
+use DevCommunityDE\CodeFormatter\Tests\Parser\Helpers\ParserTestHelpers;
 use PHPUnit\Framework\TestCase;
 
 final class ParserTest extends TestCase
 {
-    /**
-     * parses a file and returns it as array of nodes.
-     *
-     * @param string $input
-     *
-     * @return Node[]
-     */
-    private function parseFileToArray(string $input): array
-    {
-        $parser = new Parser();
-        return iterator_to_array($parser->parseFile($input));
-    }
-
-    /**
-     * parses a text and returns it as array of nodes.
-     *
-     * @param string $input
-     *
-     * @return Node[]
-     */
-    private function parseTextToArray(string $input): array
-    {
-        $parser = new Parser();
-        return iterator_to_array($parser->parseText($input));
-    }
+    use ParserTestHelpers;
 
     /**
      * @testdox Parsing a file should behave the same as parsing text
