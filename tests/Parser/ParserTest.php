@@ -1,27 +1,18 @@
 <?php
 
 declare(strict_types=1);
-namespace DevCommunityDE\CodeFormatter\Test;
+namespace DevCommunityDE\CodeFormatter\Tests\Parser;
 
 use DevCommunityDE\CodeFormatter\Parser\ElemNode;
 use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\TextNode;
+use DevCommunityDE\CodeFormatter\Tests\Parser\Helpers\ParserTestHelpers;
 use PHPUnit\Framework\TestCase;
 
 final class ParserTest extends TestCase
 {
-    private function parseFileToArray(string $input)
-    {
-        $parser = new Parser();
-        return iterator_to_array($parser->parseFile($input));
-    }
-
-    private function parseTextToArray(string $input)
-    {
-        $parser = new Parser();
-        return iterator_to_array($parser->parseText($input));
-    }
+    use ParserTestHelpers;
 
     public function testParsingAFileBehavesTheSameAsParsingAText()
     {
