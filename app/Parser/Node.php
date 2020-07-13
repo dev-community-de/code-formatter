@@ -31,6 +31,41 @@ abstract class Node
     }
 
     /**
+     * checks if this node represents [CODE] node.
+     * returns false by default.
+     *
+     * @return bool
+     */
+    public function isCode(): bool
+    {
+        return false;
+    }
+
+    /**
+     * returns a attribute assigned to this node.
+     * returns null by default.
+     *
+     * @param string $name
+     *
+     * @return string|null
+     */
+    public function getAttr(string $name): ?string
+    {
+        return null;
+    }
+
+    /**
+     * returns all matched attributes as string.
+     * returns an empty string by default.
+     *
+     * @return string
+     */
+    public function getAttrMatch(): string
+    {
+        return '';
+    }
+
+    /**
      * @see Token::getKind()
      *
      * @return int

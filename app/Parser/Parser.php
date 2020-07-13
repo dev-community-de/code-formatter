@@ -43,45 +43,33 @@ final class Parser
     {
         $length = \strlen($textData);
         $offset = 0;
+        $buffer = '';
         while ($offset < $length) {
             if (!preg_match(self::RE_TAGS, $textData, $m, 0, $offset)) {
                 // not a bbcode at the current offset
-                $span = strcspn($textData, '[', $offset);
-                if (0 === $span) {
-                    // we're looking at a '[' but did not match a bbcode
-                    // this algorithm optimizes consecutive '[' tokens
-                    $start = $offset;
-                    while (($offset + 2) < $length) {
-                        if ('[' !== $textData[$offset + 2]) {
-                            // stop folding '[' tokens, because the next
-                            // iteration has to check for a bbcode again
-                            break;
-                        }
-                        ++$offset;
-                    }
-                    // we add 1 to the span, because we know that
-                    // at least the current '[' did not start a bbcode
-                    $span = $offset - $start + 1;
-                    if ($offset + 2 === $length) {
-                        // edge case:
-                        // last token in input is a '['
-                        // there is no need to check if this token
-                        // starts a bbcode
-                        ++$span;
-                    }
-                    $offset = $start;
-                }
+                // we know for sure that a leading '[' did not start
+                // a bbcode, so we can safely assume that the span
+                // has to be at least 1
+                $span = max(1, strcspn($textData, '[', $offset));
                 $body = substr($textData, $offset, $span) ?: '';
                 $offset += $span;
-                yield new TextNode($body);
+                $buffer .= $body;
                 continue;
             }
+
+            if ('' !== $buffer) {
+                // yield a single text-node using the current buffer
+                yield new TextNode($buffer);
+                $buffer = '';
+            }
+
             // read from $textData until we see a closing tag
             $name = $m[1];
             $attrs = $this->parseAttrs($m[2]);
             $start = $offset + \strlen($m[0]);
             $needle = "[/{$name}]";
             $position = stripos($textData, $needle, $start);
+
             if (false === $position) {
                 // edge case:
                 // no closing tag found... treat the rest of the input
@@ -90,9 +78,16 @@ final class Parser
                 yield new ElemNode($name, $attrs, $body);
                 break;
             }
+
             $body = substr($textData, $start, ($position - $start)) ?: '';
             $offset = $position + \strlen($needle);
             yield new ElemNode($name, $attrs, $body);
+        }
+
+        // check if we still have some content in the buffer
+        if ('' !== $buffer) {
+            // yield the remaining buffer as text-node
+            yield new TextNode($buffer);
         }
     }
 
@@ -168,7 +163,7 @@ final class Parser
         \assert($node instanceof ElemNode);
         $bbcode = $node->getName();
         $buffer = "[{$bbcode}";
-        $buffer .= $node->getAttrs();
+        $buffer .= $node->getAttrMatch();
         $buffer .= ']';
         $buffer .= $body ?: $node->getBody();
         return $buffer . "[/{$bbcode}]";

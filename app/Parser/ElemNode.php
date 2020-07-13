@@ -31,6 +31,8 @@ final class ElemNode extends Node
     /**
      * checks if this node represents a [CODE] bbcode.
      *
+     * @override
+     *
      * @return bool
      */
     public function isCode(): bool
@@ -49,17 +51,9 @@ final class ElemNode extends Node
     }
 
     /**
-     * returns the node attributes.
-     *
-     * @return ElemAttrs
-     */
-    public function getAttrs(): ElemAttrs
-    {
-        return $this->attrs;
-    }
-
-    /**
      * returns a single node attribute.
+     *
+     * @override
      *
      * @param string $name
      *
@@ -68,5 +62,17 @@ final class ElemNode extends Node
     public function getAttr(string $name): ?string
     {
         return $this->attrs->getValue($name);
+    }
+
+    /**
+     * returns the node attributes.
+     *
+     * @override
+     *
+     * @return string
+     */
+    public function getAttrMatch(): string
+    {
+        return $this->attrs->getMatch();
     }
 }
