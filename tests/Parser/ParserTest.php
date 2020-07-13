@@ -121,7 +121,7 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @testdox Unclosed bbcodes should be matched correctly
+     * @testdox Unclosed bbcodes should consume the rest of the input as body
      *
      * @return void
      */
@@ -133,17 +133,26 @@ final class ParserTest extends TestCase
         $this->assertTrue($nodes[0]->isCode());
         $this->assertEquals('test', $nodes[0]->getBody());
 
-        // TODO we could add an algorithm that enables this:
+        // it would be possible to treat any opening bbcode
+        // as an implicit closing bbcode (if another bbcode is open).
+        // currently, the parser just consumes everything ignoring
+        // other bbcodes inside.
+        $nodes = $this->parseTextToArray('[code]a[plain]b[/plain]');
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
+        $this->assertTrue($nodes[0]->isCode());
+        $this->assertEquals('a[plain]b[/plain]', $nodes[0]->getBody());
+
+        // an optimized algorithm could produce the following:
         //
-        // $nodes = $this->parseTextToArray('[code]a[code]b[/code]');
-        // //=> [ code(a), code(b) ];
+        // $nodes = $this->parseTextToArray('[code]a[plain]b[/plain]');
         // $this->assertCount(2, $nodes);
         // $this->assertInstanceOf(ElemNode::class, $nodes[0]);
         // $this->assertTrue($nodes[0]->isCode());
         // $this->assertEquals('a', $nodes[0]->getBody());
         // $this->assertInstanceOf(ElemNode::class, $nodes[1]);
-        // $this->assertTrue($nodes[1]->isCode());
-        // $this->assertEquals('b', $nodes[1]->getBody());
+        // $this->assertEqualsIgnoringCase('plain', $nodes[1]->getName());
+        // $this->assertEqual('b', $nodes[1]->getBody());
     }
 
     /**
