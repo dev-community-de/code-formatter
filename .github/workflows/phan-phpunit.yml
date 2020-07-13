@@ -25,6 +25,6 @@ jobs:
       - name: Install composer packages
         run: composer install
       - name: Run phan from vendor folder
-        run: vendor/bin/phan -S -k ./.phan/config.php
+        run: vendor/bin/phan -S -k ./.phan/config.php --no-progress-bar
       - name: Run phpunit from vendor folder
         run: vendor/bin/phpunit
