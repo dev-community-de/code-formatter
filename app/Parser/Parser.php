@@ -84,7 +84,7 @@ final class Parser
             $position = stripos($textData, $needle, $start);
             if (false === $position) {
                 // edge case:
-                // no closing tag found... tread the rest of the input
+                // no closing tag found... treat the rest of the input
                 // as bbcode-body and stop the iteration
                 $body = substr($textData, $start) ?: '';
                 yield new ElemNode($name, $attrs, $body);

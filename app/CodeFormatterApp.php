@@ -51,7 +51,7 @@ class CodeFormatterApp
     }
 
     /**
-     * formats a token based on its type and language.
+     * formats a node based on its type and language.
      *
      * @param Node $node
      *
@@ -82,7 +82,7 @@ class CodeFormatterApp
     }
 
     /**
-     * detect a code-language form the given node.
+     * detect a code-language from the given node.
      *
      * @param ElemNode $node
      *
