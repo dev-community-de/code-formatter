@@ -64,24 +64,25 @@ final class Parser
             }
 
             // read from $textData until we see a closing tag
-            $name = $m[1];
-            $attrs = $this->parseAttrs($m[2]);
-            $start = $offset + \strlen($m[0]);
-            $needle = "[/{$name}]";
-            $position = stripos($textData, $needle, $start);
+            $tagName = $m[1];
+            $tagAttrs = $this->parseAttrs($m[2]);
+            $bodyStart = $offset + \strlen($m[0]);
+            $closeTag = "[/{$tagName}]";
+            $closePos = stripos($textData, $closeTag, $bodyStart);
 
-            if (false === $position) {
+            if (false === $closePos) {
                 // edge case:
                 // no closing tag found... treat the rest of the input
                 // as bbcode-body and stop the parsing entirely
-                $body = substr($textData, $start) ?: '';
-                yield new ElemNode($name, $attrs, $body);
+                $tagBody = substr($textData, $bodyStart) ?: '';
+                yield new ElemNode($tagName, $tagAttrs, $tagBody);
                 return;
             }
 
-            $body = substr($textData, $start, ($position - $start)) ?: '';
-            $offset = $position + \strlen($needle);
-            yield new ElemNode($name, $attrs, $body);
+            $bodySpan = $closePos - $bodyStart;
+            $tagBody = substr($textData, $bodyStart, $bodySpan) ?: '';
+            $offset = $closePos + \strlen($closeTag);
+            yield new ElemNode($tagName, $tagAttrs, $tagBody);
         }
 
         // check if we still have some content in the buffer
