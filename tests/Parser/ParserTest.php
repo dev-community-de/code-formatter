@@ -38,7 +38,7 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @testdox Parsing a file should behaves the same as parsing text
+     * @testdox Parsing a file should behave the same as parsing text
      *
      * @return void
      */
