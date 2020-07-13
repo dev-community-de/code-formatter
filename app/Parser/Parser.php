@@ -73,10 +73,10 @@ final class Parser
             if (false === $position) {
                 // edge case:
                 // no closing tag found... treat the rest of the input
-                // as bbcode-body and stop the iteration
+                // as bbcode-body and stop the parsing entirely
                 $body = substr($textData, $start) ?: '';
                 yield new ElemNode($name, $attrs, $body);
-                break;
+                return;
             }
 
             $body = substr($textData, $start, ($position - $start)) ?: '';
