@@ -147,7 +147,7 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @testdox Attributes are parsed correctly and are exported as-is
+     * @testdox Verify that attributes are parsed correctly and are exported as-is
      *
      * @return void
      */
