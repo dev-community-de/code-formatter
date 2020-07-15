@@ -70,17 +70,16 @@ class CodeFormatterApp
             return $this->exportNode($node, null);
         }
 
-        $nodeBody = $node->getBody();
-
-        if (\is_array($nodeBody)) {
+        if ($node->isRich()) {
+            // iterate over all child-nodes in this case
             $buffer = '';
-            foreach ($nodeBody as $subNode) {
+            foreach ($node->getBody() as $subNode) {
                 $buffer .= $this->formatNode($subNode);
             }
             return $this->exportNode($node, $buffer);
         }
 
-        $language = $this->detectLang($node);
+        $language = $node->getLang() ?: 'text';
         $formatter = CodeFormatter::create($language);
 
         if (null === $formatter) {
@@ -88,29 +87,10 @@ class CodeFormatterApp
             return $this->exportNode($node, null);
         }
 
+        $nodeBody = $node->getBody();
         \assert(\is_string($nodeBody));
         $result = $formatter->exec($nodeBody);
         return $this->exportNode($node, $result);
-    }
-
-    /**
-     * detect a code-language from the given node.
-     *
-     * @param ElemNode $node
-     *
-     * @return string
-     */
-    private function detectLang(ElemNode $node): string
-    {
-        $value = $node->getAttr('lang');
-
-        if (empty($value)) {
-            // check if a immediate value is set
-            // (this is the [code=lang] notation)
-            $value = $node->getAttr('@value');
-        }
-
-        return $value ?: 'text';
     }
 
     /**

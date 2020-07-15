@@ -71,9 +71,8 @@ final class Parser
                 continue;
             }
 
-            $textBody = $node->getBody();
-            \assert(\is_string($textBody));
-            $textBuffer .= $textBody;
+            \assert($node instanceof TextNode);
+            $textBuffer .= $node->getBody();
         }
 
         if (!empty($textBuffer)) {
@@ -96,35 +95,35 @@ final class Parser
 
         if (preg_match(self::RE_ELEM, $input, $m, 0, $offset)) {
             // read from $textData until we see a closing tag
-            $tagName = $m[1];
-            $tagAttrs = $this->parseAttrs($m[2]);
+            $elemName = $m[1];
+            $elemAttrs = $this->parseAttrs($m[2]);
             $bodyStart = $offset + \strlen($m[0]);
 
-            if ($this->isRichCode($tagName, $tagAttrs)) {
+            if ($this->isRichCode($elemName, $elemAttrs)) {
                 // CODE=rich allows nested CODE bbcodes ... yay.
                 // switch to the recursive parser and collect all
                 // child-nodes as tag-body
                 $state->offset = $bodyStart;
-                $tagBody = $this->parseRich($state);
-                return new ElemNode($tagName, $tagAttrs, $tagBody);
+                $elemBody = $this->parseRich($state);
+                return new ElemNode($elemName, $elemAttrs, $elemBody);
             }
 
-            $closeTag = "[/{$tagName}]";
+            $closeTag = "[/{$elemName}]";
             $closePos = stripos($input, $closeTag, $bodyStart);
 
             if (false === $closePos) {
                 // edge case:
                 // no closing tag found... treat the rest of the input
                 // as bbcode-body and stop the parsing entirely
-                $tagBody = substr($input, $bodyStart) ?: '';
+                $elemBody = substr($input, $bodyStart) ?: '';
                 $state->finish();
-                return new ElemNode($tagName, $tagAttrs, $tagBody);
+                return new ElemNode($elemName, $elemAttrs, $elemBody);
             }
 
             $bodySpan = $closePos - $bodyStart;
-            $tagBody = substr($input, $bodyStart, $bodySpan) ?: '';
+            $elemBody = substr($input, $bodyStart, $bodySpan) ?: '';
             $state->offset = $closePos + \strlen($closeTag);
-            return new ElemNode($tagName, $tagAttrs, $tagBody);
+            return new ElemNode($elemName, $elemAttrs, $elemBody);
         }
 
         $textSpan = max(1, strcspn($input, '[', $offset));
@@ -138,11 +137,11 @@ final class Parser
      *
      * @param State $state
      *
-     * @return Node[]
+     * @return NodeList
      */
-    private function parseRich(State $state): array
+    private function parseRich(State $state): NodeList
     {
-        $nodeList = [];
+        $nodeList = new NodeList();
         $textBuffer = '';
         while ($state->valid()) {
             $node = $this->parseNode($state);
@@ -150,16 +149,16 @@ final class Parser
             if ($node instanceof ElemNode) {
                 // yield a buffered text-node first (if any)
                 if (!empty($textBuffer)) {
-                    $nodeList[] = new TextNode($textBuffer);
+                    $nodeList->append($textBuffer);
                     $textBuffer = '';
                 }
 
-                $nodeList[] = $node;
+                $nodeList->append($node);
                 continue;
             }
 
+            \assert($node instanceof TextNode);
             $textBody = $node->getBody();
-            \assert(\is_string($textBody));
 
             if ('[' === $textBody) {
                 // a single bracket was parsed a text-node
@@ -179,7 +178,7 @@ final class Parser
 
         if (!empty($textBuffer)) {
             // append a buffered text-node (if any)
-            $nodeList[] = new TextNode($textBuffer);
+            $nodeList->append($textBuffer);
         }
 
         return $nodeList;
@@ -271,7 +270,7 @@ final class Parser
     public function exportNode(Node $node, ?string $body): string
     {
         if ($node instanceof TextNode) {
-            return $body ?: $this->exportBody($node->getBody());
+            return $body ?: $node->getBody();
         }
 
         \assert($node instanceof ElemNode);
@@ -286,7 +285,7 @@ final class Parser
     /**
      * exports a node body.
      *
-     * @param Node[]|string $nodeBody
+     * @param NodeList|string $nodeBody
      *
      * @return string
      */
@@ -295,6 +294,8 @@ final class Parser
         if (\is_string($nodeBody)) {
             return $nodeBody;
         }
+
+        \assert($nodeBody instanceof NodeList);
 
         $buffer = '';
         foreach ($nodeBody as $subNode) {

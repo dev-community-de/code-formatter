@@ -15,54 +15,14 @@ abstract class Node
     /** @var int */
     private $kind;
 
-    /** @var Node[]|string */
-    private $body;
-
     /**
      * constructs a new token.
      *
-     * @param int           $kind
-     * @param Node[]|string $body
+     * @param int $kind
      */
-    public function __construct(int $kind, $body)
+    public function __construct(int $kind)
     {
         $this->kind = $kind;
-        $this->body = $body;
-    }
-
-    /**
-     * checks if this node represents [CODE] node.
-     * returns false by default.
-     *
-     * @return bool
-     */
-    public function isCode(): bool
-    {
-        return false;
-    }
-
-    /**
-     * returns a attribute assigned to this node.
-     * returns null by default.
-     *
-     * @param string $name
-     *
-     * @return string|null
-     */
-    public function getAttr(string $name): ?string
-    {
-        return null;
-    }
-
-    /**
-     * returns all matched attributes as string.
-     * returns an empty string by default.
-     *
-     * @return string
-     */
-    public function getAttrMatch(): string
-    {
-        return '';
     }
 
     /**
@@ -73,15 +33,5 @@ abstract class Node
     public function getKind(): int
     {
         return $this->kind;
-    }
-
-    /**
-     * returns the node body.
-     *
-     * @return Node[]|string
-     */
-    public function getBody()
-    {
-        return $this->body;
     }
 }

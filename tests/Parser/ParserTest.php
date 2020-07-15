@@ -184,12 +184,17 @@ final class ParserTest extends TestCase
      */
     public function testRichCode()
     {
-        $nodes = $this->parseTextToArray('[code=rich]hello[code=css].test { color: red; }[/code]world[/code]');
-        $this->assertCount(1, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertEquals('rich', $nodes[0]->getAttr('@value'));
+        $nodes = $this->parseTextToArray('before[code=rich]hello[code=css].test { color: red; }[/code]world[/code]after');
+        $this->assertCount(3, $nodes);
+        $this->assertInstanceOf(TextNode::class, $nodes[0]);
+        $this->assertEquals('before', $nodes[0]->getBody());
+        $this->assertInstanceOf(TextNode::class, $nodes[2]);
+        $this->assertEquals('after', $nodes[2]->getBody());
 
-        $nodeBody = $nodes[0]->getBody();
+        $this->assertInstanceOf(ElemNode::class, $nodes[1]);
+        $this->assertEquals('rich', $nodes[1]->getLang());
+
+        $nodeBody = $nodes[1]->getBody()->toArray();
         $this->assertIsArray($nodeBody);
         $this->assertCount(3, $nodeBody);
 
@@ -203,5 +208,26 @@ final class ParserTest extends TestCase
 
         $this->assertInstanceOf(TextNode::class, $nodeBody[2]);
         $this->assertEquals('world', $nodeBody[2]->getBody());
+    }
+
+    /**
+     * @testdox Check if nodes inside CODE=rich elements are parsed correctly
+     *
+     * @return void
+     */
+    public function testRichCodeInner()
+    {
+        $nodes = $this->parseTextToArray('[code=rich]hello[[[[[world]]]][code][/code][[[[[/code]');
+        $this->assertCount(1, $nodes);
+        $nodeBody = $nodes[0]->getBody()->toArray();
+        $this->assertIsArray($nodeBody);
+        $this->assertCount(3, $nodeBody);
+        $this->assertInstanceOf(TextNode::class, $nodeBody[0]);
+        $this->assertEquals('hello[[[[[world]]]]', $nodeBody[0]->getBody());
+        $this->assertInstanceOf(ElemNode::class, $nodeBody[1]);
+        $this->assertEquals(null, $nodeBody[1]->getLang());
+        $this->assertEquals('', $nodeBody[1]->getBody());
+        $this->assertInstanceOf(TextNode::class, $nodeBody[2]);
+        $this->assertEquals('[[[[', $nodeBody[2]->getBody());
     }
 }
