@@ -176,4 +176,32 @@ final class ParserTest extends TestCase
             $this->assertEquals($input, $export);
         }
     }
+
+    /**
+     * @testdox Verifies that CODE=rich can contain CODE elements
+     *
+     * @return void
+     */
+    public function testRichCode()
+    {
+        $nodes = $this->parseTextToArray('[code=rich]hello[code=css].test { color: red; }[/code]world[/code]');
+        $this->assertCount(1, $nodes);
+        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
+        $this->assertEquals('rich', $nodes[0]->getAttr('@value'));
+
+        $nodeBody = $nodes[0]->getBody();
+        $this->assertIsArray($nodeBody);
+        $this->assertCount(3, $nodeBody);
+
+        $this->assertInstanceOf(TextNode::class, $nodeBody[0]);
+        $this->assertEquals('hello', $nodeBody[0]->getBody());
+
+        $codeNode = $nodeBody[1];
+        $this->assertInstanceOf(ElemNode::class, $codeNode);
+        $this->assertEquals('css', $codeNode->getAttr('@value'));
+        $this->assertEquals('.test { color: red; }', $codeNode->getBody());
+
+        $this->assertInstanceOf(TextNode::class, $nodeBody[2]);
+        $this->assertEquals('world', $nodeBody[2]->getBody());
+    }
 }
