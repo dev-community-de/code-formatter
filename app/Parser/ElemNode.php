@@ -17,11 +17,11 @@ final class ElemNode extends Node
     /**
      * constructs a new code-token.
      *
-     * @param string    $name
-     * @param ElemAttrs $attrs
-     * @param string    $body
+     * @param string          $name
+     * @param ElemAttrs       $attrs
+     * @param NodeList|string $body
      */
-    public function __construct(string $name, ElemAttrs $attrs, string $body)
+    public function __construct(string $name, ElemAttrs $attrs, $body)
     {
         parent::__construct(Node::KIND_ELEM, $body);
         $this->name = $name;

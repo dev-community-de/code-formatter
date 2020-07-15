@@ -15,16 +15,16 @@ abstract class Node
     /** @var int */
     private $kind;
 
-    /** @var string */
+    /** @var Node[]|string */
     private $body;
 
     /**
      * constructs a new token.
      *
-     * @param int    $kind
-     * @param string $body
+     * @param int           $kind
+     * @param Node[]|string $body
      */
-    public function __construct(int $kind, string $body)
+    public function __construct(int $kind, $body)
     {
         $this->kind = $kind;
         $this->body = $body;
@@ -66,7 +66,7 @@ abstract class Node
     }
 
     /**
-     * @see Token::getKind()
+     * returns the node kind.
      *
      * @return int
      */
@@ -76,11 +76,11 @@ abstract class Node
     }
 
     /**
-     * @see Token::getBody()
+     * returns the node body.
      *
-     * @return string
+     * @return Node[]|string
      */
-    public function getBody(): string
+    public function getBody()
     {
         return $this->body;
     }
