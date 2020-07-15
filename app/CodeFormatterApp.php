@@ -72,6 +72,7 @@ class CodeFormatterApp
 
         if ($node->isRich()) {
             // iterate over all child-nodes in this case
+            // test
             $buffer = '';
             foreach ($node->getBody() as $subNode) {
                 $buffer .= $this->formatNode($subNode);
