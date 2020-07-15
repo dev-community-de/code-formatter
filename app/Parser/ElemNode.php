@@ -17,9 +17,9 @@ final class ElemNode extends Node
     /**
      * constructs a new code-token.
      *
-     * @param string          $name
-     * @param ElemAttrs       $attrs
-     * @param NodeList|string $body
+     * @param string        $name
+     * @param ElemAttrs     $attrs
+     * @param Node[]|string $body
      */
     public function __construct(string $name, ElemAttrs $attrs, $body)
     {

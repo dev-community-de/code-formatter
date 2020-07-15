@@ -7,55 +7,6 @@ namespace DevCommunityDE\CodeFormatter\Parser;
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 
 /**
- * uses as a parse-state.
- *
- * @internal
- */
-final class State
-{
-    /** @var string */
-    public string $input;
-
-    /** @var int */
-    public int $length;
-
-    /** @var int */
-    public int $offset;
-
-    /**
-     * constructs a new state.
-     *
-     * @param string $input
-     */
-    public function __construct(string $input)
-    {
-        $this->input = $input;
-        $this->length = \strlen($input);
-        $this->offset = 0;
-    }
-
-    /**
-     * checks if this state is still valid.
-     *
-     * @return bool
-     */
-    public function valid(): bool
-    {
-        return $this->offset < $this->length;
-    }
-
-    /**
-     * marks the state a finished.
-     *
-     * @return void
-     */
-    public function finish()
-    {
-        $this->offset = $this->length;
-    }
-}
-
-/**
  * this parser uses pcre (regular expressions)
  * to parse incoming code.
  */
@@ -177,8 +128,8 @@ final class Parser
         }
 
         $textSpan = max(1, strcspn($input, '[', $offset));
-        $textBody = substr($input, $offset, $textSpan);
-        $state->offset += $textSpan;
+        $textBody = substr($input, $offset, $textSpan) ?: '';
+        $state->offset += (int) $textSpan;
         return new TextNode($textBody);
     }
 
@@ -199,11 +150,11 @@ final class Parser
             if ($node instanceof ElemNode) {
                 // yield a buffered text-node first (if any)
                 if (!empty($textBuffer)) {
-                    $nodes[] = new TextNode($textBuffer);
+                    $nodeList[] = new TextNode($textBuffer);
                     $textBuffer = '';
                 }
 
-                $nodes[] = $node;
+                $nodeList[] = $node;
                 continue;
             }
 
@@ -320,7 +271,7 @@ final class Parser
     public function exportNode(Node $node, ?string $body): string
     {
         if ($node instanceof TextNode) {
-            return $body ?: $node->getBody();
+            return $body ?: $this->exportBody($node->getBody());
         }
 
         \assert($node instanceof ElemNode);
@@ -328,7 +279,27 @@ final class Parser
         $buffer = "[{$bbcode}";
         $buffer .= $node->getAttrMatch();
         $buffer .= ']';
-        $buffer .= $body ?: $node->getBody();
+        $buffer .= $body ?: $this->exportBody($node->getBody());
         return $buffer . "[/{$bbcode}]";
+    }
+
+    /**
+     * exports a node body.
+     *
+     * @param Node[]|string $nodeBody
+     *
+     * @return string
+     */
+    private function exportBody($nodeBody): string
+    {
+        if (\is_string($nodeBody)) {
+            return $nodeBody;
+        }
+
+        $buffer = '';
+        foreach ($nodeBody as $subNode) {
+            $buffer .= $this->exportNode($subNode, null);
+        }
+        return $buffer;
     }
 }

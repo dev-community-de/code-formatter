@@ -60,7 +60,7 @@ class CodeFormatterApp
     private function formatNode(Node $node): string
     {
         if ($node instanceof TextNode) {
-            return $node->getBody();
+            return $this->exportNode($node, null);
         }
 
         \assert($node instanceof ElemNode);
@@ -70,14 +70,26 @@ class CodeFormatterApp
             return $this->exportNode($node, null);
         }
 
+        $nodeBody = $node->getBody();
+
+        if (\is_array($nodeBody)) {
+            $buffer = '';
+            foreach ($nodeBody as $subNode) {
+                $buffer .= $this->formatNode($subNode);
+            }
+            return $buffer;
+        }
+
         $language = $this->detectLang($node);
         $formatter = CodeFormatter::create($language);
+
         if (null === $formatter) {
             // no formatter found, return node as is
             return $this->exportNode($node, null);
         }
 
-        $result = $formatter->exec($node->getBody());
+        \assert(\is_string($nodeBody));
+        $result = $formatter->exec($nodeBody);
         return $this->exportNode($node, $result);
     }
 
