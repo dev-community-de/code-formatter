@@ -77,7 +77,7 @@ class CodeFormatterApp
             foreach ($nodeBody as $subNode) {
                 $buffer .= $this->formatNode($subNode);
             }
-            return $buffer;
+            return $this->exportNode($node, $buffer);
         }
 
         $language = $this->detectLang($node);
