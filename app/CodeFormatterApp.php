@@ -83,7 +83,7 @@ class CodeFormatterApp
         $formatter = CodeFormatter::create($language);
 
         if (null === $formatter) {
-            // no formatter found, return node as is
+            // no formatter found, return node as-is
             return $this->exportNode($node, null);
         }
 

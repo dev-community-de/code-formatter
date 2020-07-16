@@ -5,7 +5,6 @@ namespace DevCommunityDE\CodeFormatter\Tests\Parser;
 
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\Parser\ElemNode;
-use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\NodeList;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\TextNode;
@@ -55,13 +54,17 @@ final class ParserTest extends TestCase
      */
     public function testPlainElement()
     {
-        $nodes = $this->parseTextToArray('before plain bbcode[plain][code]test[/code][/plain]');
-        $this->assertCount(2, $nodes);
+        $nodes = $this->parseTextToArray(
+            'before' .
+            '[plain][code]test[/code][/plain]' .
+            'after'
+        )
+        ;
+        $this->assertCount(3, $nodes);
 
         $node0 = $nodes[0];
         \assert($node0 instanceof TextNode);
-        $this->assertEquals(Node::KIND_TEXT, $node0->getKind());
-        $this->assertEquals('before plain bbcode', $node0->getBody());
+        $this->assertEquals('before', $node0->getBody());
 
         $node1 = $nodes[1];
         \assert($node1 instanceof ElemNode);
@@ -74,6 +77,10 @@ final class ParserTest extends TestCase
         $elemBody = $node1->getBody();
         $this->assertIsString($elemBody);
         $this->assertEquals('[code]test[/code]', $elemBody);
+
+        $node2 = $nodes[2];
+        \assert($node2 instanceof TextNode);
+        $this->assertEquals('after', $node2->getBody());
     }
 
     /**
@@ -271,7 +278,16 @@ final class ParserTest extends TestCase
      */
     public function testRichCode()
     {
-        $nodes = $this->parseTextToArray('before[code=rich]hello[code=css].test { color: red; }[/code]world[/code]after');
+        $nodes = $this->parseTextToArray(
+            'before' .
+            '[code=rich]' .
+                'hello' .
+                '[code=css].test { color: red; }[/code]' .
+                'world' .
+            '[/code]' .
+            'after'
+        );
+
         $this->assertCount(3, $nodes);
 
         $node0 = $nodes[0];
@@ -322,6 +338,98 @@ final class ParserTest extends TestCase
         $subNode2 = $elemBody[2];
         \assert($subNode2 instanceof TextNode);
         $this->assertEquals('world', $subNode2->getBody());
+    }
+
+    /**
+     * @testdox Check nested CODE=rich elements
+     *
+     * @return void
+     */
+    public function testNestedRichCode()
+    {
+        $nodes = $this->parseTextToArray(
+            'before' .
+            '[code=rich]' .
+                '[code lang="rich" title="inner"]' .
+                    '[code]test[/code]' .
+                '[/code]' .
+                'between' .
+                '[code=rich][b]test2[/b][/code]' .
+            '[/code]' .
+            'after'
+        );
+
+        $this->assertCount(3, $nodes);
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals('before', $node0->getBody());
+
+        $node1 = $nodes[1];
+        \assert($node1 instanceof ElemNode);
+        $this->assertTrue($node1->isCode());
+        $this->assertTrue($node1->isRich());
+        $this->assertEquals('rich', $node1->getLang());
+        $this->assertEquals('=rich', $node1->getAttrMatch());
+        $this->assertEquals('rich', $node1->getAttr('@value'));
+
+        $nodeList = $node1->getBody();
+        \assert($nodeList instanceof NodeList);
+
+        $elemBody = $nodeList->toArray();
+        $this->assertCount(3, $elemBody);
+
+        $subNode0 = $elemBody[0];
+        \assert($subNode0 instanceof ElemNode);
+        $this->assertTrue($subNode0->isCode());
+        $this->assertTrue($subNode0->isRich());
+        $this->assertEquals('rich', $subNode0->getLang());
+        $this->assertEquals('rich', $subNode0->getAttr('lang'));
+        $this->assertEquals('inner', $subNode0->getAttr('title'));
+        $this->assertEquals(' lang="rich" title="inner"', $subNode0->getAttrMatch());
+        $this->assertNull($subNode0->getAttr('@value'));
+
+        $subNodeList = $subNode0->getBody();
+        \assert($subNodeList instanceof NodeList);
+
+        $subElemBody = $subNodeList->toArray();
+        $this->assertCount(1, $subElemBody);
+
+        $subSubNode0 = $subElemBody[0];
+        \assert($subSubNode0 instanceof ElemNode);
+        $this->assertTrue($subSubNode0->isCode());
+        $this->assertFalse($subSubNode0->isRich());
+
+        $subSubElemBody = $subSubNode0->getBody();
+        $this->assertIsString($subSubElemBody);
+        $this->assertEquals('test', $subSubElemBody);
+
+        $subNode1 = $elemBody[1];
+        \assert($subNode1 instanceof TextNode);
+        $this->assertEquals('between', $subNode1->getBody());
+
+        $subNode2 = $elemBody[2];
+        \assert($subNode2 instanceof ElemNode);
+        $this->assertTrue($subNode2->isCode());
+        $this->assertTrue($subNode2->isRich());
+        $this->assertEquals('rich', $subNode2->getLang());
+        $this->assertNull($subNode2->getAttr('lang'));
+        $this->assertEquals('=rich', $subNode2->getAttrMatch());
+        $this->assertEquals('rich', $subNode2->getAttr('@value'));
+
+        $subNodeList = $subNode2->getBody();
+        \assert($subNodeList instanceof NodeList);
+
+        $subElemBody = $subNodeList->toArray();
+        $this->assertCount(1, $subElemBody);
+
+        $subSubNode0 = $subElemBody[0];
+        \assert($subSubNode0 instanceof TextNode);
+        $this->assertEquals('[b]test2[/b]', $subSubNode0->getBody());
+
+        $node2 = $nodes[2];
+        \assert($node2 instanceof TextNode);
+        $this->assertEquals('after', $node2->getBody());
     }
 
     /**
