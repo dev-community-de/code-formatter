@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace DevCommunityDE\CodeFormatter\Parser;
 
 /**
- * uses as a parse-state.
+ * used internally as a parse-state.
  *
  * @internal
  */

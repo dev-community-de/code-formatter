@@ -6,14 +6,10 @@ namespace DevCommunityDE\CodeFormatter\Parser;
 
 use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 
-/**
- * this parser uses pcre (regular expressions)
- * to parse incoming code.
- */
 final class Parser
 {
     /** pattern used to tokenize bbcode elements */
-    private const RE_ELEM = '/\G\[(code|plain)(=\w+|(?:\s+\w+=(?:"[^"]*"|\S+))*)\]/i';
+    private const RE_ELEM = '/\G\[(code|plain)(=\w+|(?:\s+\w+=(?:"[^"]*"|\S+?))*)\]/i';
 
     /** pattern used to tokenize attributes */
     private const RE_ATTR = '/\G\s*(\w+)=("[^"]*"|\S+)/';
@@ -25,10 +21,19 @@ final class Parser
      */
     public function parseFile(string $filePath): iterable
     {
-        $textData = file_get_contents($filePath);
+        // note: we cannot stat php://input
+        // therefore we have to give it a try
+        $fileHandle = @fopen($filePath, 'r');
+
+        if (false === $fileHandle) {
+            throw new Exception('unable to open file: ' . $filePath);
+        }
+
+        $textData = stream_get_contents($fileHandle);
+        fclose($fileHandle);
 
         if (false === $textData) {
-            throw new Exception('unable to parse file: ' . $filePath);
+            throw new Exception('unable to read file: ' . $filePath);
         }
 
         return $this->parseText($textData);
@@ -161,14 +166,13 @@ final class Parser
             $textBody = $node->getBody();
 
             if ('[' === $textBody) {
-                // a single bracket was parsed a text-node
+                // a single bracket was parsed as text-node
                 $input = $state->input;
                 $offset = $state->offset;
-                $closePos = stripos($input, '/code]', $offset);
 
-                if ($closePos === $offset) {
+                if (0 === substr_compare($input, '/code]', $offset, 6, true)) {
                     // found a closing tag, stop rich-parsing
-                    $state->offset += \strlen('/code]');
+                    $state->offset += 6;
                     break;
                 }
             }
