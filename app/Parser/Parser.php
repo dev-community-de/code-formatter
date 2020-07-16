@@ -33,7 +33,7 @@ final class Parser
         fclose($fileHandle);
 
         if (false === $textData) {
-            throw new Exception('unable to parse file: ' . $filePath);
+            throw new Exception('unable to read file: ' . $filePath);
         }
 
         return $this->parseText($textData);

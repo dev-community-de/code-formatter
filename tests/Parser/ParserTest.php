@@ -38,13 +38,9 @@ final class ParserTest extends TestCase
     {
         $input = __DIR__ . '/non-existent.txt';
         $this->assertFalse(file_exists($input));
-
-        try {
-            $this->parseFileToArray($input);
-            $this->assertTrue(false);
-        } catch (Exception $ex) {
-            $this->assertTrue(true);
-        }
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('unable to open file: ' . $input);
+        $this->parseFileToArray($input);
     }
 
     /**
