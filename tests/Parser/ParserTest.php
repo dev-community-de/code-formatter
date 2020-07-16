@@ -37,7 +37,7 @@ final class ParserTest extends TestCase
      */
     public function testFileParsing()
     {
-        $input = __DIR__ . 'non-existent.txt';
+        $input = __DIR__ . '/non-existent.txt';
         $this->assertFalse(file_exists($input));
 
         try {
