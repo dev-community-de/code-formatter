@@ -5,10 +5,12 @@ namespace DevCommunityDE\CodeFormatter\Tests\Parser;
 
 use DevCommunityDE\CodeFormatter\Parser\ElemNode;
 use DevCommunityDE\CodeFormatter\Parser\Node;
+use DevCommunityDE\CodeFormatter\Parser\NodeList;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\TextNode;
 use DevCommunityDE\CodeFormatter\Tests\Parser\Helpers\ParserTestHelpers;
 use PHPUnit\Framework\TestCase;
+use Traversable;
 
 final class ParserTest extends TestCase
 {
@@ -36,12 +38,23 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('before plain bbcode[plain][code]test[/code][/plain]');
         $this->assertCount(2, $nodes);
-        $this->assertInstanceof(TextNode::class, $nodes[0]);
-        $this->assertEquals(Node::KIND_TEXT, $nodes[0]->getKind());
-        $this->assertEquals('before plain bbcode', $nodes[0]->getBody());
-        $this->assertInstanceof(ElemNode::class, $nodes[1]);
-        $this->assertNotTrue($nodes[1]->isCode());
-        $this->assertEquals('[code]test[/code]', $nodes[1]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals(Node::KIND_TEXT, $node0->getKind());
+        $this->assertEquals('before plain bbcode', $node0->getBody());
+
+        $node1 = $nodes[1];
+        \assert($node1 instanceof ElemNode);
+        $this->assertNotTrue($node1->isCode());
+        $this->assertNotTrue($node1->isRich());
+        $this->assertNull($node1->getLang());
+        $this->assertEquals('plain', $node1->getName());
+        $this->assertEquals('', $node1->getAttrMatch());
+
+        $elemBody = $node1->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('[code]test[/code]', $elemBody);
     }
 
     /**
@@ -53,16 +66,28 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('hello[[[[[');
         $this->assertCount(1, $nodes);
-        $this->assertInstanceof(TextNode::class, $nodes[0]);
-        $this->assertEquals('hello[[[[[', $nodes[0]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals('hello[[[[[', $node0->getBody());
 
         $nodes = $this->parseTextToArray('hello[[[[[code]test[/code]');
         $this->assertCount(2, $nodes);
-        $this->assertInstanceof(TextNode::class, $nodes[0]);
-        $this->assertEquals('hello[[[[', $nodes[0]->getBody());
-        $this->assertInstanceof(ElemNode::class, $nodes[1]);
-        $this->assertTrue($nodes[1]->isCode());
-        $this->assertEquals('test', $nodes[1]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals('hello[[[[', $node0->getBody());
+
+        $node1 = $nodes[1];
+        \assert($node1 instanceof ElemNode);
+        $this->assertTrue($node1->isCode());
+        $this->assertFalse($node1->isRich());
+        $this->assertNull($node1->getLang());
+        $this->assertEquals('', $node1->getAttrMatch());
+
+        $elemBody = $node1->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('test', $elemBody);
     }
 
     /**
@@ -74,11 +99,21 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('[code]a[/code]b[/code]');
         $this->assertCount(2, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertTrue($nodes[0]->isCode());
-        $this->assertEquals('a', $nodes[0]->getBody());
-        $this->assertInstanceOf(TextNode::class, $nodes[1]);
-        $this->assertEquals('b[/code]', $nodes[1]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+        $this->assertNull($node0->getLang());
+        $this->assertEquals('', $node0->getAttrMatch());
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('a', $elemBody);
+
+        $node1 = $nodes[1];
+        \assert($node1 instanceof TextNode);
+        $this->assertEquals('b[/code]', $node1->getBody());
     }
 
     /**
@@ -90,11 +125,21 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('[code][code]test[/code][/code]');
         $this->assertCount(2, $nodes);
-        $this->assertInstanceof(ElemNode::class, $nodes[0]);
-        $this->assertTrue($nodes[0]->isCode());
-        $this->assertEquals('[code]test', $nodes[0]->getBody());
-        $this->assertInstanceof(TextNode::class, $nodes[1]);
-        $this->assertEquals('[/code]', $nodes[1]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+        $this->assertNull($node0->getLang());
+        $this->assertEquals('', $node0->getAttrMatch());
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('[code]test', $elemBody);
+
+        $node1 = $nodes[1];
+        \assert($node1 instanceof TextNode);
+        $this->assertEquals('[/code]', $node1->getBody());
     }
 
     /**
@@ -106,9 +151,17 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('[code]test');
         $this->assertCount(1, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertTrue($nodes[0]->isCode());
-        $this->assertEquals('test', $nodes[0]->getBody());
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+        $this->assertNull($node0->getLang());
+        $this->assertEquals('', $node0->getAttrMatch());
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('test', $elemBody);
 
         // it would be possible to treat any opening bbcode
         // as an implicit closing bbcode (if another bbcode is open).
@@ -116,20 +169,14 @@ final class ParserTest extends TestCase
         // other bbcodes inside.
         $nodes = $this->parseTextToArray('[code]a[plain]b[/plain]');
         $this->assertCount(1, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertTrue($nodes[0]->isCode());
-        $this->assertEquals('a[plain]b[/plain]', $nodes[0]->getBody());
 
-        // an optimized algorithm could produce the following:
-        //
-        // $nodes = $this->parseTextToArray('[code]a[plain]b[/plain]');
-        // $this->assertCount(2, $nodes);
-        // $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        // $this->assertTrue($nodes[0]->isCode());
-        // $this->assertEquals('a', $nodes[0]->getBody());
-        // $this->assertInstanceOf(ElemNode::class, $nodes[1]);
-        // $this->assertEqualsIgnoringCase('plain', $nodes[1]->getName());
-        // $this->assertEqual('b', $nodes[1]->getBody());
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('a[plain]b[/plain]', $elemBody);
     }
 
     /**
@@ -137,20 +184,38 @@ final class ParserTest extends TestCase
      *
      * @return void
      */
-    public function testAttributeBehaviour()
+    public function testAttributeParsing()
     {
         $nodes = $this->parseTextToArray('[code=css]test{}[/code]');
         $this->assertCount(1, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertEquals('=css', $nodes[0]->getAttrMatch());
-        $this->assertEquals('css', $nodes[0]->getAttr('@value'));
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+        $this->assertEquals('css', $node0->getLang());
+        $this->assertEquals('=css', $node0->getAttrMatch());
+        $this->assertEquals('css', $node0->getAttr('@value'));
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('test{}', $elemBody);
 
         $nodes = $this->parseTextToArray('[code lang="css" title="Test 123"]test{}[/code]');
         $this->assertCount(1, $nodes);
-        $this->assertInstanceOf(ElemNode::class, $nodes[0]);
-        $this->assertEquals(' lang="css" title="Test 123"', $nodes[0]->getAttrMatch());
-        $this->assertEquals('css', $nodes[0]->getAttr('lang'));
-        $this->assertEquals('Test 123', $nodes[0]->getAttr('title'));
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+        $this->assertEquals('css', $node0->getLang());
+        $this->assertEquals(' lang="css" title="Test 123"', $node0->getAttrMatch());
+        $this->assertEquals('css', $node0->getAttr('lang'));
+        $this->assertEquals('Test 123', $node0->getAttr('title'));
+
+        $elemBody = $node0->getBody();
+        $this->assertIsString($elemBody);
+        $this->assertEquals('test{}', $elemBody);
     }
 
     /**
@@ -166,6 +231,9 @@ final class ParserTest extends TestCase
             '[code lang=css title="Test"]test{}[/code]',
             '[plain][code=css]test{}[/code][/plain]',
             '[CODE]test[/CODE]',
+            '[code]test[/code]',
+            '[code=rich][code]test[/code]test[/code]',
+            '[CODE=css]test[[[[/CODE]',
         ];
 
         foreach ($inputs as $input) {
@@ -178,7 +246,7 @@ final class ParserTest extends TestCase
     }
 
     /**
-     * @testdox Verifies that CODE=rich can contain CODE elements
+     * @testdox Verify that CODE=rich is parsed correctly
      *
      * @return void
      */
@@ -186,48 +254,54 @@ final class ParserTest extends TestCase
     {
         $nodes = $this->parseTextToArray('before[code=rich]hello[code=css].test { color: red; }[/code]world[/code]after');
         $this->assertCount(3, $nodes);
-        $this->assertInstanceOf(TextNode::class, $nodes[0]);
-        $this->assertEquals('before', $nodes[0]->getBody());
-        $this->assertInstanceOf(TextNode::class, $nodes[2]);
-        $this->assertEquals('after', $nodes[2]->getBody());
 
-        $this->assertInstanceOf(ElemNode::class, $nodes[1]);
-        $this->assertEquals('rich', $nodes[1]->getLang());
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals('before', $node0->getBody());
 
-        $nodeBody = $nodes[1]->getBody()->toArray();
-        $this->assertIsArray($nodeBody);
-        $this->assertCount(3, $nodeBody);
+        $node2 = $nodes[2];
+        \assert($node2 instanceof TextNode);
+        $this->assertEquals('after', $node2->getBody());
 
-        $this->assertInstanceOf(TextNode::class, $nodeBody[0]);
-        $this->assertEquals('hello', $nodeBody[0]->getBody());
+        $node1 = $nodes[1];
+        \assert($node1 instanceof ElemNode);
+        $this->assertTrue($node1->isCode());
+        $this->assertTrue($node1->isRich());
+        $this->assertEquals('rich', $node1->getLang());
+        $this->assertEquals('=rich', $node1->getAttrMatch());
+        $this->assertEquals('rich', $node1->getAttr('@value'));
 
-        $codeNode = $nodeBody[1];
-        $this->assertInstanceOf(ElemNode::class, $codeNode);
-        $this->assertEquals('css', $codeNode->getAttr('@value'));
-        $this->assertEquals('.test { color: red; }', $codeNode->getBody());
+        $nodeList = $node1->getBody();
+        \assert($nodeList instanceof NodeList);
+        $nodeIter = $nodeList->getIterator();
+        $this->assertInstanceOf(Traversable::class, $nodeIter);
 
-        $this->assertInstanceOf(TextNode::class, $nodeBody[2]);
-        $this->assertEquals('world', $nodeBody[2]->getBody());
-    }
+        $nodeListArray = iterator_to_array($nodeIter);
+        $this->assertIsArray($nodeListArray);
 
-    /**
-     * @testdox Check if nodes inside CODE=rich elements are parsed correctly
-     *
-     * @return void
-     */
-    public function testRichCodeInner()
-    {
-        $nodes = $this->parseTextToArray('[code=rich]hello[[[[[world]]]][code][/code][[[[[/code]');
-        $this->assertCount(1, $nodes);
-        $nodeBody = $nodes[0]->getBody()->toArray();
-        $this->assertIsArray($nodeBody);
-        $this->assertCount(3, $nodeBody);
-        $this->assertInstanceOf(TextNode::class, $nodeBody[0]);
-        $this->assertEquals('hello[[[[[world]]]]', $nodeBody[0]->getBody());
-        $this->assertInstanceOf(ElemNode::class, $nodeBody[1]);
-        $this->assertEquals(null, $nodeBody[1]->getLang());
-        $this->assertEquals('', $nodeBody[1]->getBody());
-        $this->assertInstanceOf(TextNode::class, $nodeBody[2]);
-        $this->assertEquals('[[[[', $nodeBody[2]->getBody());
+        $elemBody = $nodeList->toArray();
+        $this->assertIsArray($elemBody);
+        $this->assertCount(3, $elemBody);
+        $this->assertEquals($elemBody, $nodeListArray);
+
+        $subNode0 = $elemBody[0];
+        \assert($subNode0 instanceof TextNode);
+        $this->assertEquals('hello', $subNode0->getBody());
+
+        $subNode1 = $elemBody[1];
+        \assert($subNode1 instanceof ElemNode);
+        $this->assertTrue($subNode1->isCode());
+        $this->assertFalse($subNode1->isRich());
+        $this->assertEquals('css', $subNode1->getLang());
+        $this->assertEquals('=css', $subNode1->getAttrMatch());
+        $this->assertEquals('css', $subNode1->getAttr('@value'));
+
+        $subElemBody = $subNode1->getBody();
+        $this->assertIsString($subElemBody);
+        $this->assertEquals('.test { color: red; }', $subElemBody);
+
+        $subNode2 = $elemBody[2];
+        \assert($subNode2 instanceof TextNode);
+        $this->assertEquals('world', $subNode2->getBody());
     }
 }
