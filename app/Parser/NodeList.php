@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace DevCommunityDE\CodeFormatter\Parser;
 
 use IteratorAggregate;
+use Traversable;
 
 final class NodeList implements IteratorAggregate
 {
@@ -50,16 +51,12 @@ final class NodeList implements IteratorAggregate
     }
 
     /**
-     * returns the node-list as iterable list.
+     * returns the node-list as traversable.
      *
-     * (phan has issues with returning an array as iterable)
-     *
-     * @phan-suppress PhanParamSignatureMismatchInternal
-     *
-     * @return Node[]
+     * @return Traversable<Node>
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
-        return $this->nodes;
+        yield from $this->nodes;
     }
 }
