@@ -73,7 +73,7 @@ final class ElemNode extends Node
     {
         $langAttr = $this->getAttr('lang');
 
-        if (empty($langAttr) && $this->isCode()) {
+        if (null === $langAttr && $this->isCode()) {
             $langAttr = $this->getAttr('@value');
         }
 

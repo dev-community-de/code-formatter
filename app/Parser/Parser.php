@@ -13,7 +13,7 @@ use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 final class Parser
 {
     /** pattern used to tokenize bbcode elements */
-    private const RE_ELEM = '/\G\[(code|plain)(=\w+|(?:\s+\w+=(?:"[^"]*"|\S+))*)\]/i';
+    private const RE_ELEM = '/\G\[(code|plain)(=\w+|(?:\s+\w+=(?:"[^"]*"|\S+?))*)\]/i';
 
     /** pattern used to tokenize attributes */
     private const RE_ATTR = '/\G\s*(\w+)=("[^"]*"|\S+)/';
@@ -25,7 +25,16 @@ final class Parser
      */
     public function parseFile(string $filePath): iterable
     {
-        $textData = file_get_contents($filePath);
+        // note: we cannot stat php://input
+        // therefore we have to give it a try
+        $fileHandle = @fopen($filePath, 'r');
+
+        if (false === $fileHandle) {
+            throw new Exception('unable to open file: ' . $filePath);
+        }
+
+        $textData = stream_get_contents($fileHandle);
+        fclose($fileHandle);
 
         if (false === $textData) {
             throw new Exception('unable to parse file: ' . $filePath);

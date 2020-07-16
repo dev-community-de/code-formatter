@@ -3,6 +3,7 @@
 declare(strict_types=1);
 namespace DevCommunityDE\CodeFormatter\Tests\Parser;
 
+use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\Parser\ElemNode;
 use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\NodeList;
@@ -27,6 +28,24 @@ final class ParserTest extends TestCase
         $fromText = $this->parseTextToArray(file_get_contents($input));
         $fromFile = $this->parseFileToArray($input);
         $this->assertEquals($fromText, $fromFile);
+    }
+
+    /**
+     * @testdox Parsing a non-existent file should throw
+     *
+     * @return void
+     */
+    public function testFileParsing()
+    {
+        $input = __DIR__ . 'non-existent.txt';
+        $this->assertFalse(file_exists($input));
+
+        try {
+            $this->parseFileToArray($input);
+            $this->assertTrue(false);
+        } catch (Exception $ex) {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -303,5 +322,43 @@ final class ParserTest extends TestCase
         $subNode2 = $elemBody[2];
         \assert($subNode2 instanceof TextNode);
         $this->assertEquals('world', $subNode2->getBody());
+    }
+
+    /**
+     * @testdox The parser should make the best out of invalid inputs
+     *
+     * @return void
+     */
+    public function testInvalidInputs()
+    {
+        $nodes = $this->parseTextToArray('[code lang=""""title="test"ing][/code]');
+        $this->assertCount(1, $nodes);
+
+        // TODO XenForo does not recognize this as a bbcode ...
+        $node0 = $nodes[0];
+        \assert($node0 instanceof ElemNode);
+        $this->assertTrue($node0->isCode());
+        $this->assertFalse($node0->isRich());
+
+        // the `lang=""` part gets parsed correctly, because the parser
+        // matched the attribute string not containing white-space (\S+)
+        $this->assertEquals('', $node0->getLang());
+        $this->assertEquals('', $node0->getAttr('lang'));
+
+        $this->assertEquals(' lang=""""title="test"ing', $node0->getAttrMatch());
+        $this->assertNull($node0->getAttr('@value'));
+        $this->assertNull($node0->getAttr('title'));
+
+        $parser = new Parser();
+        $export = $parser->exportNode($node0, null);
+        $this->assertEquals('[code lang=""""title="test"ing][/code]', $export);
+
+        $nodes = $this->parseTextToArray('[code lang= """"title="test"ing][/code]');
+        // note the white-space ---------------------^
+        $this->assertCount(1, $nodes);
+
+        $node0 = $nodes[0];
+        \assert($node0 instanceof TextNode);
+        $this->assertEquals('[code lang= """"title="test"ing][/code]', $node0->getBody());
     }
 }
