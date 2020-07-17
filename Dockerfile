@@ -9,9 +9,6 @@ WORKDIR /srv/app
 
 RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
-RUN mkdir -p /srv/app/storage/code
-RUN chmod -R ug+rwx /srv/app/storage/code && chown -R www-data:www-data /srv/app && a2enmod rewrite
-
 # Packages for formatting C and C++ code
 RUN apt-get update -y && \
     apt-get install -y clang-format
@@ -29,5 +26,9 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && npm install
+
+# Install pretter-daemon
+RUN cp prettierd.service /etc/systemd/system/prettierd.service
+RUN systemctl start prettierd
 
 EXPOSE 8080

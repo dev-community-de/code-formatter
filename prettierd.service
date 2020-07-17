@@ -1,0 +1,13 @@
+[Unit]
+Description=pretter formatter daemon
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/srv/app
+ExecStart=/srv/app/prettierd.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
