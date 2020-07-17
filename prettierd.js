@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-const fs = require('fs');
 const net = require('net');
-const path = require('path');
-
 const argv = process.argv.slice(1);
 const port = 9870;
 
@@ -64,9 +61,8 @@ const server = net.createServer(options, con => {
     console.error(err);
   });
 });
-server.listen(port);
-
 process.on('SIGINT', () => {
   server.close();
   process.exit();
 });
+server.listen(port);
