@@ -9,7 +9,7 @@ if (argv.includes('-c')) {
   const stdout = process.stdout;
   const stderr = process.stderr;
   const file = argv.indexOf('-f');
-  if (file === -1 || argv.length < file) {
+  if (file === -1 || !argv[file + 1]) {
     stderr.write("missing filename\n");
     process.exit(1);
     return;
@@ -24,6 +24,10 @@ if (argv.includes('-c')) {
       stdout.write(msg, 'utf8')
     });
   });
+  con.on('error', err => {
+    stderr.write(err.message);
+    process.exit(1);
+  });
   return;
 }
 
@@ -35,15 +39,15 @@ const server = net.createServer(options, con => {
   let seenName = false;
   let fileData = '';
   con.on('data', msg => {
-    let input = msg.toString('utf8');
+    const input = msg.toString('utf8');
     if (seenName) {
       fileData += input;
       return;
     }
-    let lineFeed = input.indexOf("\n");
+    const lineFeed = input.indexOf("\n");
     if (lineFeed > -1) {
-      let before = input.substring(0, lineFeed);
-      let after = input.substr(lineFeed + 1);
+      const before = input.substr(0, lineFeed);
+      const after = input.substr(lineFeed + 1);
       fileName += before;
       fileData += after;
       seenName = true;
@@ -57,9 +61,9 @@ const server = net.createServer(options, con => {
     con.write(result);
     con.destroy();
   })
-  con.on('error', err => {
-    console.error(err);
-  });
+});
+server.on('error', err => {
+  console.error(err.message);
 });
 process.on('SIGINT', () => {
   server.close();
