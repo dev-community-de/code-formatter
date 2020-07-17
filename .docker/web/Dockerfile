@@ -21,7 +21,3 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && npm install
-
-# Install pretter-daemon
-RUN cp prettierd.service /etc/systemd/system/prettierd.service
-RUN systemctl start prettierd
