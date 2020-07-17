@@ -1,4 +1,4 @@
-name: Static analysis (phan)
+name: Static analysis (phan) & Unit Testing (phpunit)
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - "**.php"
 
 jobs:
-  phan:
+  phan-phpunit:
     runs-on: ubuntu-latest
     steps:
       - name: Install PHP and dependencies
@@ -25,4 +25,6 @@ jobs:
       - name: Install composer packages
         run: composer install
       - name: Run phan from vendor folder
-        run: vendor/bin/phan -S -k ./.phan/config.php
+        run: vendor/bin/phan -S -k ./.phan/config.php --no-progress-bar
+      - name: Run phpunit from vendor folder
+        run: vendor/bin/phpunit

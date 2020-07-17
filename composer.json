@@ -9,8 +9,14 @@
             "DevCommunityDE\\CodeFormatter\\": "app"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "DevCommunityDE\\CodeFormatter\\Tests\\": "tests/"
+        }
+    },
     "require-dev": {
         "symfony/var-dumper": "^5.0",
+        "phpunit/phpunit": "^9.2",
         "phan/phan": "^3.0"
     }
 }

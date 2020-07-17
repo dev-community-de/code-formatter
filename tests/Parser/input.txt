@@ -1,0 +1,3 @@
+hello
+[code]world[/code]
+[plain][code]testing[/code][/plain]
