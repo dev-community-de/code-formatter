@@ -7,10 +7,10 @@ COPY . /srv/app
 
 WORKDIR /srv/app
 
+RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
 RUN mkdir -p /srv/app/storage/code
 RUN chmod -R ug+rwx /srv/app/storage/code && chown -R www-data:www-data /srv/app && a2enmod rewrite
-
-RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Packages for formatting C and C++ code
 RUN apt-get update -y && \
