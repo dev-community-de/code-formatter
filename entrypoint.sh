@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
-prettierd-server &
-apache2-foreground
+nohup prettierd-server &
+exec docker-php-entrypoint apache2-foreground
