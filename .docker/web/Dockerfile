@@ -30,4 +30,4 @@ COPY prettierd-server.sh /usr/local/bin/prettierd-server
 
 # Install custom entrypoint
 COPY entrypoint.sh /usr/local/bin/cf-entrypoint
-CMD ["cf-entrypoint"]
+ENTRYPOINT ["cf-entrypoint"]
