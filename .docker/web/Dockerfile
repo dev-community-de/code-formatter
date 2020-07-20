@@ -24,3 +24,13 @@ RUN apt-get update -y && \
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && npm install
+
+# Install prettier-daemon
+COPY prettierd-server.sh /usr/local/bin/prettierd-server
+RUN chmod +x /usr/local/bin/prettierd-server
+
+# Install custom entrypoint
+COPY entrypoint.sh /usr/local/bin/cf-entrypoint
+RUN chmod +x /usr/local/bin/cf-entrypoint
+
+ENTRYPOINT ["cf-entrypoint"]
