@@ -11,6 +11,7 @@ RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 RUN mkdir -p /srv/app/storage/code
 RUN chmod -R ug+rwx /srv/app/storage/code && chown -R www-data:www-data /srv/app && a2enmod rewrite
+RUN chmod +x /srv/app/prettierd.js
 
 # Packages for formatting C and C++ code
 RUN apt-get update -y && \
@@ -34,5 +35,15 @@ RUN apt-get update -y && \
 RUN curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer && \
     chmod a+x php-cs-fixer && \
     mv php-cs-fixer /usr/local/bin/php-cs-fixer
+
+# Install prettier-daemon
+COPY prettierd-server.sh /usr/local/bin/prettierd-server
+RUN chmod +x /usr/local/bin/prettierd-server
+
+# Install custom entrypoint
+COPY entrypoint.sh /usr/local/bin/cf-entrypoint
+RUN chmod +x /usr/local/bin/cf-entrypoint
+
+ENTRYPOINT ["cf-entrypoint"]
 
 EXPOSE 8080

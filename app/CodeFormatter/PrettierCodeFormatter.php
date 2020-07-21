@@ -7,6 +7,8 @@ namespace DevCommunityDE\CodeFormatter\CodeFormatter;
  */
 class PrettierCodeFormatter extends CodeFormatter
 {
+    private const USE_PRETTIERD = true;
+
     /**
      * @var array
      */
@@ -41,6 +43,10 @@ class PrettierCodeFormatter extends CodeFormatter
                 break;
             default:
                 $filename .= $this->language;
+        }
+
+        if (self::USE_PRETTIERD) {
+            return __DIR__ . '/../../prettierd.js -c -f ' . $filename;
         }
 
         return 'npx prettier --loglevel silent --stdin --stdin-filepath ' . $filename;
