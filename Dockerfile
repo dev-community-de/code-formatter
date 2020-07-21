@@ -29,7 +29,7 @@ RUN apt-get update -y && \
 # Packages for formatting code using Prettier (JS, CSS, PHP, etc)
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get install -y nodejs && npm install
+    apt-get install -y git nodejs && npm install
 
 # Install prettier-daemon
 COPY prettierd-server.sh /usr/local/bin/prettierd-server
