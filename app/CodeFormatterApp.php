@@ -3,6 +3,7 @@
 namespace DevCommunityDE\CodeFormatter;
 
 use DevCommunityDE\CodeFormatter\CodeFormatter\CodeFormatter;
+use DevCommunityDE\CodeFormatter\Exceptions\Exception;
 use DevCommunityDE\CodeFormatter\Parser\ElemNode;
 use DevCommunityDE\CodeFormatter\Parser\Node;
 use DevCommunityDE\CodeFormatter\Parser\Parser;
@@ -89,8 +90,14 @@ class CodeFormatterApp
 
         $nodeBody = $node->getBody();
         \assert(\is_string($nodeBody));
-        $result = $formatter->exec($nodeBody);
-        return $this->exportNode($node, $result);
+
+        try {
+            $result = $formatter->exec($nodeBody);
+            return $this->exportNode($node, $result);
+        } catch (Exception $e) {
+            // null => use original code-body
+            return $this->exportNode($node, null);
+        }
     }
 
     /**

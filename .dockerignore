@@ -7,3 +7,7 @@ LICENSE
 README.md
 composer.json
 composer.lock
+.php_cs
+.phan
+cloudbuild.yaml
+.github

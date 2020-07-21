@@ -1,8 +1,9 @@
 {
+    "private": true,
     "name": "code-formatter",
     "description": "Manage JS dependencies to be used with the Code Formatter",
-    "version": "0.1.0",
     "dependencies": {
+        "@prettier/plugin-php": "^0.14.2",
         "prettier": "^2.0.5"
     }
 }
