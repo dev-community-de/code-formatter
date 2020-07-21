@@ -21,6 +21,7 @@ class PrettierCodeFormatter extends CodeFormatter
         'markdown',
         'scss',
         'yaml',
+        'php',
     ];
 
     /**

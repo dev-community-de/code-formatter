@@ -20,15 +20,10 @@ RUN apt-get update -y && \
     apt-get install -y python3.7-minimal python3-pip && \
     pip3 install black
 
-# Packages for formatting code using Prettier (JS, CSS, etc)
+# Packages for formatting code using Prettier (JS, CSS, PHP, etc)
 RUN apt-get update -y && \
     curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get install -y nodejs && npm install
-
-# Packages for formatting PHP code
-RUN curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer && \
-    chmod a+x php-cs-fixer && \
-    mv php-cs-fixer /usr/local/bin/php-cs-fixer
 
 # Install prettier-daemon
 COPY prettierd-server.sh /usr/local/bin/prettierd-server

@@ -14,7 +14,6 @@ abstract class CodeFormatter
         ClangCodeFormatter::class,
         GoCodeFormatter::class,
         PrettierCodeFormatter::class,
-        PhpCodeFormatter::class,
     ];
 
     protected const LANGUAGES = [];

@@ -85,3 +85,10 @@ overrides:
             singleQuote: false
             tabWidth: 2
             trailingComma: none
+
+    -   files:
+            - "*.php"
+        options:
+            parser: php
+            singleQuote: true
+            phpVersion: "7.1"
