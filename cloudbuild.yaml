@@ -1,15 +1,15 @@
 steps:
     # install composer dependencies
-    - name: 'gcr.io/$PROJECT_ID/composer'
+    - name: 'composer:2'
       args: ['install', '--no-dev', '--optimize-autoloader']
 
     # build the container image
     - name: 'gcr.io/cloud-builders/docker'
-      args: ['build', '-t', 'gcr.io/$PROJECT_ID/code-formatter:$COMMIT_SHA', '.']
+      args: ['build', '-t', 'europe-west4-docker.pkg.dev/$PROJECT_ID/code-formatter/code-formatter:$COMMIT_SHA', '.']
 
-    # push the container image to Container Registry
+    # push the container image to Artifact Registry
     - name: 'gcr.io/cloud-builders/docker'
-      args: ['push', 'gcr.io/$PROJECT_ID/code-formatter:$COMMIT_SHA']
+      args: ['push', 'europe-west4-docker.pkg.dev/$PROJECT_ID/code-formatter/code-formatter:$COMMIT_SHA']
 
     # Deploy container image to Cloud Run
     - name: 'gcr.io/cloud-builders/gcloud'
@@ -18,11 +18,11 @@ steps:
       - 'deploy'
       - 'code-formatter'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/code-formatter:$COMMIT_SHA'
+      - 'europe-west4-docker.pkg.dev/$PROJECT_ID/code-formatter/code-formatter:$COMMIT_SHA'
       - '--region'
       - 'europe-west4'
       - '--platform'
       - 'managed'
 
 images:
-    - 'gcr.io/$PROJECT_ID/code-formatter:$COMMIT_SHA'
+    - 'europe-west4-docker.pkg.dev/$PROJECT_ID/code-formatter/code-formatter:$COMMIT_SHA'
