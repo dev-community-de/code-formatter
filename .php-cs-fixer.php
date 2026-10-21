@@ -4,7 +4,7 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude('vendor')
     ->in(__DIR__);
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setIndent('    ')
     ->setRiskyAllowed(true)
@@ -15,11 +15,11 @@ return PhpCsFixer\Config::create()
         'blank_line_before_statement' => [
             'statements' => [],
         ],
-        'single_blank_line_before_namespace' => false,
+        'blank_lines_before_namespace' => false,
         'array_syntax' => ['syntax' => 'short'],
         'combine_consecutive_issets' => true,
         'combine_consecutive_unsets' => true,
-        'compact_nullable_typehint' => true,
+        'compact_nullable_type_declaration' => true,
         'explicit_indirect_variable' => true,
         'explicit_string_variable' => true,
         'fully_qualified_strict_types' => true,

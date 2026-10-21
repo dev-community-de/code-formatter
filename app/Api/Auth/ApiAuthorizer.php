@@ -26,8 +26,8 @@ class ApiAuthorizer
         }
 
         if (
-            !isset($_GET['api_key']) ||
-            !$this->checkApiKey()
+            !isset($_GET['api_key'])
+            || !$this->checkApiKey()
         ) {
             // set http status 401 unauthorized
             http_response_code(401);
