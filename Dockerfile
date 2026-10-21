@@ -1,6 +1,6 @@
 # Dockerfile for production
 
-FROM php:7.4-apache
+FROM php:8.5.12-apache
 
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY . /srv/app
@@ -23,13 +23,11 @@ RUN apt-get update -y && \
 
 # Packages for formatting Python code
 RUN apt-get update -y && \
-    apt-get install -y python3.7-minimal python3-pip && \
-    pip3 install black
+    apt-get install -y black
 
 # Packages for formatting code using Prettier (JS, CSS, PHP, etc)
 RUN apt-get update -y && \
-    curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get install -y git nodejs && npm install
+    apt-get install -y git nodejs npm && npm install
 
 # Install prettier-daemon
 COPY prettierd-server.sh /usr/local/bin/prettierd-server

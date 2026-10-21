@@ -11,6 +11,10 @@ endOfLine: lf
 semi: false
 proseWrap: preserve
 
+# Plugins
+plugins:
+    - "@prettier/plugin-php"
+
 # Language specific settings
 overrides:
 

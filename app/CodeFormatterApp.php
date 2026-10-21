@@ -22,7 +22,7 @@ class CodeFormatterApp
      *
      * @param Parser|null $parser
      */
-    public function __construct(Parser $parser = null)
+    public function __construct(?Parser $parser = null)
     {
         $this->parser = $parser ?? new Parser();
     }

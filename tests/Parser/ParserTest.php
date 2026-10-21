@@ -10,7 +10,6 @@ use DevCommunityDE\CodeFormatter\Parser\Parser;
 use DevCommunityDE\CodeFormatter\Parser\TextNode;
 use DevCommunityDE\CodeFormatter\Tests\Parser\Helpers\ParserTestHelpers;
 use PHPUnit\Framework\TestCase;
-use Traversable;
 
 final class ParserTest extends TestCase
 {
@@ -305,7 +304,7 @@ final class ParserTest extends TestCase
         $nodeList = $node1->getBody();
         \assert($nodeList instanceof NodeList);
         $nodeIter = $nodeList->getIterator();
-        $this->assertInstanceOf(Traversable::class, $nodeIter);
+        $this->assertInstanceOf(\Traversable::class, $nodeIter);
 
         $nodeListArray = iterator_to_array($nodeIter);
         $this->assertIsArray($nodeListArray);

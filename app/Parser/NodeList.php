@@ -3,10 +3,7 @@
 declare(strict_types=1);
 namespace DevCommunityDE\CodeFormatter\Parser;
 
-use IteratorAggregate;
-use Traversable;
-
-final class NodeList implements IteratorAggregate
+final class NodeList implements \IteratorAggregate
 {
     /** @var Node[] */
     private $nodes;
@@ -53,9 +50,9 @@ final class NodeList implements IteratorAggregate
     /**
      * returns the node-list as traversable.
      *
-     * @return Traversable<Node>
+     * @return \Traversable<Node>
      */
-    public function getIterator(): Traversable
+    public function getIterator(): \Traversable
     {
         yield from $this->nodes;
     }

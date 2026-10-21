@@ -55,11 +55,17 @@ const server = net.createServer(options, con => {
     }
     fileName += input;
   });
-  con.on('end', () => {
-    const config = prettier.resolveConfig.sync(fileName);
-    const result = prettier.format(fileData, config);
-    con.write(result);
-    con.destroy();
+  con.on('end', async () => {
+    try {
+      const config = await prettier.resolveConfig(fileName);
+      const result = await prettier.format(fileData, config);
+      con.write(result);
+      con.destroy();
+    } catch (err) {
+      // reset the connection so the client exits with an error
+      console.error(err.message);
+      con.resetAndDestroy();
+    }
   })
 });
 server.on('error', err => {
