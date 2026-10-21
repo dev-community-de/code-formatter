@@ -6,3 +6,4 @@ node_modules
 payload.txt
 bootstrap/env.php
 .php_cs.cache
+.phpunit.result.cache

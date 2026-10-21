@@ -27,7 +27,7 @@ class PrettierCodeFormatter extends CodeFormatter
     /**
      * Config is taken automatically from <code>.prettierrc</code> file.
      *
-     * @internal <code>--loglevel silent</code> does not override exit codes
+     * @internal <code>--log-level silent</code> does not override exit codes
      *
      * @return string
      */
@@ -50,6 +50,6 @@ class PrettierCodeFormatter extends CodeFormatter
             return __DIR__ . '/../../prettierd.js -c -f ' . $filename;
         }
 
-        return 'npx prettier --loglevel silent --stdin --stdin-filepath ' . $filename;
+        return 'npx prettier --log-level silent --stdin --stdin-filepath ' . $filename;
     }
 }
