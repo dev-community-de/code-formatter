@@ -1,4 +1,4 @@
-FROM php:8.5.12-apache
+FROM php:8.5.13-apache
 
 COPY .docker/web/vhost.conf /etc/apache2/sites-available/000-default.conf
 
