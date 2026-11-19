@@ -1,6 +1,6 @@
 # Dockerfile for production
 
-FROM php:8.5.12-apache
+FROM php:8.5-apache
 
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY . /srv/app

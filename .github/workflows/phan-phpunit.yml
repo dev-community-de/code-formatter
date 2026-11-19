@@ -8,7 +8,7 @@ on:
 jobs:
   phan-phpunit:
     runs-on: ubuntu-latest
-    container: php:8.5.12-cli
+    container: php:8.5-cli
     steps:
       - name: Install PHP extensions and dependencies
         run: |
